@@ -1,4 +1,5 @@
 PODS:
+  - AFNetworking/Reachability (2.2.4)
   - AFNetworking/Serialization (2.2.4)
   - Expecta (0.3.1)
   - ISO8601DateFormatterValueTransformer (0.6.0):
@@ -14,6 +15,7 @@ PODS:
   - RestKit/CoreData (0.24.1):
     - RestKit/ObjectMapping
   - RestKit/Network (0.24.1):
+    - AFNetworking/Reachability (~> 2.2.0)
     - AFNetworking/Serialization (~> 2.2.0)
     - RestKit/ObjectMapping
     - RestKit/Support
@@ -55,7 +57,7 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: 3ac3a721381697cab4e792d8049ce2f2e9ad3036
   OCHamcrest: e19857683e4eefab64b878668eac04c2f4567118
   OCMock: a6a7dc0e3997fb9f35d99f72528698ebf60d64f2
-  RestKit: 2cb7569104d1892bbc2b0333b22ec800d7eed91c
+  RestKit: 337661445a006c42c17274fcc8e078508af7f3e6
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
   RKValueTransformers: 66ac5e4f077fdbe3496e792d89eeff4c3eb67701
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392

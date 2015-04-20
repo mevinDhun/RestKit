@@ -36,6 +36,7 @@
 #import "RKRouter.h"
 #import "RKRoute.h"
 #import "RKRouteSet.h"
+#import "RKAFHTTPClient.h"
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")
@@ -311,15 +312,15 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
 static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParameterEncoding encoding)
 {
     switch (encoding) {
-        case AFFormURLParameterEncoding:
+        case RKFormURLParameterEncoding:
             return RKMIMETypeFormURLEncoded;
             break;
             
-        case AFJSONParameterEncoding:
+        case RKJSONParameterEncoding:
             return RKMIMETypeJSON;
             break;
             
-        case AFPropertyListParameterEncoding:
+        case RKPropertyListParameterEncoding:
             break;
             
         default:
@@ -380,7 +381,7 @@ static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParamet
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
-    RKObjectManager *manager = [[self alloc] initWithHTTPClient:[AFHTTPClient clientWithBaseURL:baseURL]];
+    RKObjectManager *manager = [[self alloc] initWithHTTPClient:[RKAFHTTPClient clientWithBaseURL:baseURL]];
     [manager setAcceptHeaderWithMIMEType:RKMIMETypeJSON];
     manager.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
     return manager;
@@ -413,7 +414,7 @@ static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParamet
     NSMutableURLRequest* request;
     if (parameters && !([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"])) {
         // NOTE: If the HTTP client has been subclasses, then the developer may be trying to perform signing on the request
-        NSDictionary *parametersForClient = [self.HTTPClient isMemberOfClass:[AFHTTPClient class]] ? nil : parameters;
+        NSDictionary *parametersForClient = [self.HTTPClient isMemberOfClass:[RKAFHTTPClient class]] ? nil : parameters;
         request = [self.HTTPClient requestWithMethod:method path:path parameters:parametersForClient];
 		
         NSError *error = nil;
@@ -547,7 +548,7 @@ static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParamet
 
 #pragma mark - Object Request Operations
 
-- (void)copyStateFromHTTPClientToHTTPRequestOperation:(AFHTTPRequestOperation *)operation
+- (void)copyStateFromHTTPClientToHTTPRequestOperation:(RKHTTPRequestOperation *)operation
 {
     operation.credential = self.HTTPClient.defaultCredential;
     operation.allowsInvalidSSLCertificate = self.HTTPClient.allowsInvalidSSLCertificate;

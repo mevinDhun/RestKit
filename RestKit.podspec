@@ -47,6 +47,7 @@ EOS
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'SOCKit'
     ns.dependency       'AFNetworking/Serialization', '~> 2.2.0'
+    ns.dependency       'AFNetworking/Reachability', '~> 2.2.0' 
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
 
