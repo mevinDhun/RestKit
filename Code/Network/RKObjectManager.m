@@ -308,7 +308,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
     return NO;
 }
 
-static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParameterEncoding encoding)
+static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParameterEncoding encoding)
 {
     switch (encoding) {
         case AFFormURLParameterEncoding:
@@ -323,16 +323,12 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
             break;
             
         default:
-            RKLogWarning(@"RestKit is unable to infer the appropriate request serialization MIME Type from an `AFHTTPClientParameterEncoding` value of %d: defaulting to `RKMIMETypeFormURLEncoded`", encoding);
+            RKLogWarning(@"RestKit is unable to infer the appropriate request serialization MIME Type from an `RKHTTPClientParameterEncoding` value of %d: defaulting to `RKMIMETypeFormURLEncoded`", encoding);
             break;
     }
     
     return RKMIMETypeFormURLEncoded;
 }
-
-@interface AFHTTPClient ()
-@property (readonly, nonatomic, strong) NSURLCredential *defaultCredential;
-@end
 
 ///////////////////////////////////
 
@@ -348,7 +344,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 @implementation RKObjectManager
 
-- (instancetype)initWithHTTPClient:(AFHTTPClient *)client
+- (instancetype)initWithHTTPClient:(id<RKHTTPClient>)client
 {
     self = [super init];
     if (self) {
@@ -361,7 +357,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         self.registeredHTTPRequestOperationClasses = [NSMutableArray new];
         self.registeredManagedObjectRequestOperationClasses = [NSMutableArray new];
         self.registeredObjectRequestOperationClasses = [NSMutableArray new];
-        self.requestSerializationMIMEType = RKMIMETypeFromAFHTTPClientParameterEncoding(client.parameterEncoding);        
+        self.requestSerializationMIMEType = RKMIMETypeFromRKHTTPClientParameterEncoding(client.parameterEncoding);        
 
         // Set shared manager if nil
         if (nil == sharedManager) {
@@ -385,7 +381,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
     RKObjectManager *manager = [[self alloc] initWithHTTPClient:[AFHTTPClient clientWithBaseURL:baseURL]];
-    [manager.HTTPClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
     [manager setAcceptHeaderWithMIMEType:RKMIMETypeJSON];
     manager.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
     return manager;
@@ -409,7 +404,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 #pragma mark - Building Requests
 
 /**
- This method is the `RKObjectManager` analog for the method of the same name on `AFHTTPClient`.
+ This method is the `RKObjectManager` analog for the method of the same name on `RKHTTPClient`.
  */
 - (NSMutableURLRequest *)requestWithMethod:(NSString *)method
                                       path:(NSString *)path
@@ -499,7 +494,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                                  method:(RKRequestMethod)method
                                                    path:(NSString *)path
                                              parameters:(NSDictionary *)parameters
-                              constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
+                              constructingBodyWithBlock:(void (^)(id <RKMultipartFormData> formData))block
 {
     NSString *requestPath = (path) ? path : [[self.router URLForObject:object method:method] relativeString];
     id requestParameters = [self mergedParametersWithObject:object method:method parameters:parameters];
