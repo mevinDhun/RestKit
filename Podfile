@@ -17,13 +17,13 @@ def import_pods
 end
 
 target :ios do
-  platform :ios, '5.1.1'
+  platform :ios, '6.0'
   link_with 'RestKitTests'
   import_pods
 end
 
 target :osx do
-  platform :osx, '10.7'
+  platform :osx, '10.8'
   link_with 'RestKitFrameworkTests'
   import_pods
 end

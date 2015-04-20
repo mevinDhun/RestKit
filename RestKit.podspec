@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
 
   # Platform setup
   s.requires_arc = true
-  s.ios.deployment_target = '5.1.1'
-  s.osx.deployment_target = '10.7'
+  s.ios.deployment_target = '6.0'
+  s.osx.deployment_target = '10.8'
 
   # Exclude optional Search and Testing modules
   s.default_subspec = 'Core'
@@ -46,7 +46,7 @@ EOS
     ns.ios.frameworks = 'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration'
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'SOCKit'
-    ns.dependency       'AFNetworking', '~> 1.3.0'
+    ns.dependency       'AFNetworking/Serialization', '~> 2.2.0'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
 
