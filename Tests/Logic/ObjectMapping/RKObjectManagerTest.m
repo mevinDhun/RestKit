@@ -31,7 +31,7 @@
 #import "RKPost.h"
 #import "RKObjectRequestOperation.h"
 #import "RKManagedObjectRequestOperation.h"
-#import "RKAFHTTPClient.h"
+#import "RKHTTPClient.h"
 
 @interface RKSubclassedTestModel : RKObjectMapperTestModel
 @end
@@ -39,10 +39,10 @@
 @implementation RKSubclassedTestModel
 @end
 
-@interface RKTestRKAFHTTPClient : RKAFHTTPClient
+@interface RKTestRKHTTPClient : RKHTTPClient
 @end
 
-@implementation RKTestRKAFHTTPClient
+@implementation RKTestRKHTTPClient
 
 - (NSMutableURLRequest *)requestWithMethod:(NSString *)method
                                       path:(NSString *)path
@@ -168,17 +168,17 @@
     expect(manager.requestSerializationMIMEType).to.equal(RKMIMETypeFormURLEncoded);
 }
 
-- (void)testInitializationWithRKAFHTTPClientSetsNilAcceptHeaderValue
+- (void)testInitializationWithRKHTTPClientSetsNilAcceptHeaderValue
 {
-    RKAFHTTPClient *client = [RKAFHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    RKHTTPClient *client = [RKHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
     [client setDefaultHeader:@"Accept" value:@"this/that"];
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
     expect([manager defaultHeaders][@"Accept"]).to.equal(@"this/that");
 }
 
-- (void)testDefersToRKAFHTTPClientParameterEncodingWhenInitializedWithRKAFHTTPClient
+- (void)testDefersToRKHTTPClientParameterEncodingWhenInitializedWithRKHTTPClient
 {
-    RKAFHTTPClient *client = [RKAFHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    RKHTTPClient *client = [RKHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
     client.parameterEncoding = RKJSONParameterEncoding;
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
     expect([manager requestSerializationMIMEType]).to.equal(RKMIMETypeJSON);
@@ -186,7 +186,7 @@
 
 - (void)testDefaultsToFormURLEncodingForUnsupportedParameterEncodings
 {
-    RKAFHTTPClient *client = [RKAFHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    RKHTTPClient *client = [RKHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
     client.parameterEncoding = RKPropertyListParameterEncoding;
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
     expect([manager requestSerializationMIMEType]).to.equal(RKMIMETypeFormURLEncoded);
@@ -502,9 +502,9 @@
     expect(string).to.equal(@"human[name]&key=value");
 }
 
-- (void)testRKAFHTTPClientCanModifyRequestsBuiltByObjectManager
+- (void)testRKHTTPClientCanModifyRequestsBuiltByObjectManager
 {
-    RKTestRKAFHTTPClient *testClient = [[RKTestRKAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
+    RKTestRKHTTPClient *testClient = [[RKTestRKHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:testClient];
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     NSURLRequest *request = [manager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
@@ -684,7 +684,7 @@
 - (void)testChangingHTTPClient
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    manager.HTTPClient = [RKAFHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://google.com/"]];
+    manager.HTTPClient = [RKHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://google.com/"]];
     expect([manager.baseURL absoluteString]).to.equal(@"http://google.com/");
 }
 

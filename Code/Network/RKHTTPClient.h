@@ -50,12 +50,12 @@
 /**
  The default HTTP headers used 
  **/
-@property (readonly, nonatomic, strong) NSMutableDictionary *defaultHeaders;
+@property (nonatomic, strong) NSMutableDictionary *defaultHeaders;
 
 /**
  Creates and returns an `RKHTTPClient` object.
  */
-+ (instancetype)manager;
++ (instancetype)client;
 
 /**
  Static Initializer
@@ -128,5 +128,10 @@
                                                    path:(NSString *)path
                                              parameters:(NSDictionary *)parameters
                               constructingBodyWithBlock:(void (^)(id <RKMultipartFormData> formData))block;
+
+@end
+
+
+@interface RKHTTPClient : NSObject <RKHTTPClient>
 
 @end

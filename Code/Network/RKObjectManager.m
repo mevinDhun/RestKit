@@ -36,7 +36,7 @@
 #import "RKRouter.h"
 #import "RKRoute.h"
 #import "RKRouteSet.h"
-#import "RKAFHTTPClient.h"
+#import "RKHTTPClient.h"
 #import "RKHTTPRequestSerializer.h"
 
 #ifdef _COREDATADEFINES_H
@@ -364,7 +364,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
-    RKObjectManager *manager = [[self alloc] initWithHTTPClient:[RKAFHTTPClient clientWithBaseURL:baseURL]];
+    RKObjectManager *manager = [[self alloc] initWithHTTPClient:[RKHTTPClient clientWithBaseURL:baseURL]];
     [manager setAcceptHeaderWithMIMEType:RKMIMETypeJSON];
 
     return manager;

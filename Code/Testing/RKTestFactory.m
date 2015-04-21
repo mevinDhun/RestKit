@@ -25,7 +25,7 @@
 #import "RKPathUtilities.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKObjectRequestOperation.h"
-#import "RKAFHTTPClient.h"
+#import "RKHTTPClient.h"
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")
@@ -114,9 +114,9 @@
 - (void)defineDefaultFactories
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        __block RKAFHTTPClient *client;
+        __block RKHTTPClient *client;
         RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
-            client = [RKAFHTTPClient clientWithBaseURL:self.baseURL];
+            client = [RKHTTPClient clientWithBaseURL:self.baseURL];
         });
 
         return client;
