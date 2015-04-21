@@ -134,4 +134,6 @@
 
 @interface RKHTTPClient : NSObject <RKHTTPClient>
 
+@property (strong, nonatomic, readonly) NSURLSession *session;
+
 @end
