@@ -19,7 +19,6 @@
 //
 
 #import "RKHTTPRequestOperation.h"
-//#import "RKHTTPJSONResponseSerializer.h"
 #import "RKLog.h"
 #import "lcl_RK.h"
 #import "RKHTTPUtilities.h"
@@ -68,10 +67,6 @@ const NSMutableSet *acceptableContentTypes;
     }
     
     self.request = urlRequest;
-    
-//    self.responseSerializer = [RKHTTPJSONResponseSerializer serializer];
-    
-//    self.supportsSession = [AFURLSessionManager class] ? YES : NO;
     
     return self;
 }
@@ -155,33 +150,6 @@ const NSMutableSet *acceptableContentTypes;
     
     return ![[self class] acceptableContentTypes] || [[[self class] acceptableContentTypes] containsObject:contentType];
 }
-
-//#pragma mark - NSURLConnectionDelegate methods
-//
-//- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-//{
-//    [super connection:connection didReceiveAuthenticationChallenge:challenge];
-//
-//    RKLogDebug(@"Received authentication challenge");
-//}
-//
-//- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
-//{
-//    if ([AFHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
-//        NSURLRequest *returnValue = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
-//        if (returnValue) {
-//            if (redirectResponse) RKLogDebug(@"Following redirect request: %@", returnValue);
-//            return returnValue;
-//        } else {
-//            RKLogDebug(@"Not following redirect to %@", request);
-//            return nil;
-//        }
-//    } else {
-//        if (redirectResponse) RKLogDebug(@"Following redirect request: %@", request);
-//        return request;
-//    }
-//}
-
 
 #pragma mark - NSSecureCoding
 
