@@ -309,28 +309,6 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
     return NO;
 }
 
-static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParameterEncoding encoding)
-{
-    switch (encoding) {
-        case RKFormURLParameterEncoding:
-            return RKMIMETypeFormURLEncoded;
-            break;
-            
-        case RKJSONParameterEncoding:
-            return RKMIMETypeJSON;
-            break;
-            
-        case RKPropertyListParameterEncoding:
-            break;
-            
-        default:
-            RKLogWarning(@"RestKit is unable to infer the appropriate request serialization MIME Type from an `RKHTTPClientParameterEncoding` value of %d: defaulting to `RKMIMETypeFormURLEncoded`", encoding);
-            break;
-    }
-    
-    return RKMIMETypeFormURLEncoded;
-}
-
 ///////////////////////////////////
 
 @interface RKObjectManager ()
@@ -358,7 +336,6 @@ static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParamet
         self.registeredHTTPRequestOperationClasses = [NSMutableArray new];
         self.registeredManagedObjectRequestOperationClasses = [NSMutableArray new];
         self.registeredObjectRequestOperationClasses = [NSMutableArray new];
-        self.requestSerializationMIMEType = RKMIMETypeFromRKHTTPClientParameterEncoding(client.parameterEncoding);        
 
         // Set shared manager if nil
         if (nil == sharedManager) {
@@ -383,7 +360,7 @@ static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParamet
 {
     RKObjectManager *manager = [[self alloc] initWithHTTPClient:[RKAFHTTPClient clientWithBaseURL:baseURL]];
     [manager setAcceptHeaderWithMIMEType:RKMIMETypeJSON];
-    manager.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
+
     return manager;
 }
 
@@ -411,22 +388,7 @@ static NSString *RKMIMETypeFromRKHTTPClientParameterEncoding(RKHTTPClientParamet
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters
 {
-    NSMutableURLRequest* request;
-    if (parameters && !([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"])) {
-        // NOTE: If the HTTP client has been subclasses, then the developer may be trying to perform signing on the request
-        NSDictionary *parametersForClient = [self.HTTPClient isMemberOfClass:[RKAFHTTPClient class]] ? nil : parameters;
-        request = [self.HTTPClient requestWithMethod:method path:path parameters:parametersForClient];
-		
-        NSError *error = nil;
-        NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(self.HTTPClient.stringEncoding));
-        [request setValue:[NSString stringWithFormat:@"%@; charset=%@", self.requestSerializationMIMEType, charset] forHTTPHeaderField:@"Content-Type"];
-        NSData *requestBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:self.requestSerializationMIMEType error:&error];
-        [request setHTTPBody:requestBody];
-	} else {
-        request = [self.HTTPClient requestWithMethod:method path:path parameters:parameters];
-    }
-
-	return request;
+    return (NSMutableURLRequest*) [self.HTTPClient requestWithMethod:method path:path parameters:parameters];
 }
 
 - (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName

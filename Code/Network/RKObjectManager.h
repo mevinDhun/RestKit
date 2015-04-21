@@ -324,19 +324,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 @property (nonatomic, strong) RKRouter *router;
 
 ///--------------------------------------------------
-/// @name Configuring Request and Response MIME Types
+/// @name Configuring Response MIME Types
 ///--------------------------------------------------
-
-/**
- The MIME Type to serialize request parameters into when constructing request objects.
-
- The value of the `requestSerializationMIMEType` is used to obtain an appropriate `RKSerialization` conforming class from the `RKMIMESerialization` interface. Parameterized objects and dictionaries of parameters are then serialized for transport using the class registered for the MIME Type. By default, the value is `RKMIMETypeFormURLEncoded` which means that the request body of all `POST`, `PUT`, and `PATCH` requests will be sent in the URL encoded format. This is analagous to submitting an HTML form via a web browser. Other common formats include `RKMIMETypeJSON`, which will cause request bodies to be encoded as JSON.
-
- The value given for the `requestSerializationMIMEType` must correspond to a MIME Type registered via `[RKMIMETypeSerialization registerClass:forMIMEType:]`. Implementations are provided by default for `RKMIMETypeFormURLEncoded` and `RKMIMETypeJSON`.
-
- **Default**: `RKMIMETypeFormURLEncoded` or the value of the parameter encoding for the underlying `RKHTTPClient`.
- */
-@property (nonatomic, strong) NSString *requestSerializationMIMEType;
 
 /**
  Sets a default header on the HTTP client for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.

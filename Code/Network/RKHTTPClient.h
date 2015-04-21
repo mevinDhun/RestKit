@@ -19,18 +19,6 @@
 @property (readonly, nonatomic, strong) NSURL *baseURL;
 
 /**
- The string encoding used in constructing url requests. This is `NSUTF8StringEncoding` by default.
- */
-@property (nonatomic, assign) NSStringEncoding stringEncoding;
-
-/**
- The `RKHTTPClientParameterEncoding` value corresponding to how parameters are encoded into a request body for request methods other than `GET`, `HEAD` or `DELETE`. This is `AFFormURLParameterEncoding` by default.
- 
- @warning Some nested parameter structures, such as a keyed array of hashes containing inconsistent keys (i.e. `@{@"": @[@{@"a" : @(1)}, @{@"b" : @(2)}]}`), cannot be unambiguously represented in query strings. It is strongly recommended that an unambiguous encoding, such as `AFJSONParameterEncoding`, is used when posting complicated or nondeterministic parameter structures.
- */
-@property (nonatomic, assign) RKHTTPClientParameterEncoding parameterEncoding;
-
-/**
  Requests created with `requestWithMethod:URLString:parameters:` & `multipartFormRequestWithMethod:URLString:parameters:constructingBodyWithBlock:` are constructed with a set of default headers using a parameter serialization specified by this property. By default, this is set to an instance of `AFHTTPRequestSerializer`, which serializes query string parameters for `GET`, `HEAD`, and `DELETE` requests, or otherwise URL-form-encodes HTTP message bodies.
  
  @warning `requestSerializer` must not be `nil`.
