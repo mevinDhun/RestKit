@@ -37,6 +37,7 @@
 #import "RKRoute.h"
 #import "RKRouteSet.h"
 #import "RKAFHTTPClient.h"
+#import "RKHTTPRequestSerializer.h"
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")
@@ -336,6 +337,11 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
         self.registeredHTTPRequestOperationClasses = [NSMutableArray new];
         self.registeredManagedObjectRequestOperationClasses = [NSMutableArray new];
         self.registeredObjectRequestOperationClasses = [NSMutableArray new];
+        
+        //Set default serializer if none set
+        if(!client.requestSerializer){
+            client.requestSerializer = [RKHTTPRequestSerializer new];
+        }
 
         // Set shared manager if nil
         if (nil == sharedManager) {
