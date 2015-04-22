@@ -129,11 +129,15 @@
                                              parameters:(NSDictionary *)parameters
                               constructingBodyWithBlock:(void (^)(id <RKMultipartFormData> formData))block;
 
+- (id)performRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
+
 @end
 
 
 @interface RKHTTPClient : NSObject <RKHTTPClient>
 
 @property (strong, nonatomic, readonly) NSURLSession *session;
+
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
 
 @end

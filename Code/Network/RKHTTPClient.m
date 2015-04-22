@@ -54,12 +54,17 @@ defaultHeaders = _defaultHeaders;
     self.baseURL = url;
     self.sessionConfiguration = configuration;
     self.requestSerializer = [RKHTTPRequestSerializer serializer];
+    self.defaultHeaders = [NSMutableDictionary new];
     
     return self;
 }
 
 - (void)setDefaultHeader:(NSString *)header
                    value:(NSString *)value{
+    
+    if(!value){
+        return;
+    }
     
     NSMutableArray *headers;
     if(!self.defaultHeaders[header]){
@@ -90,6 +95,13 @@ defaultHeaders = _defaultHeaders;
         NSLog(@"%@", error.localizedDescription);
     }
     
+    for(NSString *key in self.defaultHeaders){
+        NSArray *values = self.defaultHeaders[key];
+        
+        for(NSString *value in values){
+            [request addValue:value forHTTPHeaderField:key];
+        }
+    }
     
     return request;
 }
@@ -118,9 +130,20 @@ defaultHeaders = _defaultHeaders;
 -(NSString*)URLStringByAppendingPath:(NSString*)path{
     
     NSURLComponents *components = [NSURLComponents componentsWithURL:self.baseURL resolvingAgainstBaseURL:NO];
-    components.path = path;
+    components.path = [components.path stringByAppendingString:path];
     
     return [components string];
+}
+
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler{
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:completionHandler];
+    
+    [task resume];
+
+    return task;
 }
 
 @end
