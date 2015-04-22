@@ -539,13 +539,13 @@
 		25FBB853159272DD00955D27 /* RKRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FBB850159272DD00955D27 /* RKRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FBB854159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
 		25FBB855159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
-		4F1AF5471AE528C900C8B8C9 /* RKHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF5411AE528C900C8B8C9 /* RKHTTP.h */; };
+		4F1AF5471AE528C900C8B8C9 /* RKHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF5411AE528C900C8B8C9 /* RKHTTP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F1AF5481AE528C900C8B8C9 /* RKHTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF5411AE528C900C8B8C9 /* RKHTTP.h */; };
-		4F1AF5491AE528C900C8B8C9 /* RKHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF5421AE528C900C8B8C9 /* RKHTTPClient.h */; };
+		4F1AF5491AE528C900C8B8C9 /* RKHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF5421AE528C900C8B8C9 /* RKHTTPClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F1AF54A1AE528C900C8B8C9 /* RKHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF5421AE528C900C8B8C9 /* RKHTTPClient.h */; };
-		4F1AF54D1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF54B1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h */; };
+		4F1AF54D1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF54B1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F1AF54E1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF54B1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h */; };
-		4F1AF54F1AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF54C1AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h */; };
+		4F1AF54F1AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF54C1AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F1AF5501AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F1AF54C1AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h */; };
 		4F3682781AE5BE05008C6BA6 /* AFURLRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682741AE5BE05008C6BA6 /* AFURLRequestSerialization.h */; };
 		4F3682791AE5BE05008C6BA6 /* AFURLRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682741AE5BE05008C6BA6 /* AFURLRequestSerialization.h */; };
@@ -555,31 +555,31 @@
 		4F36827D1AE5BE05008C6BA6 /* AFURLResponseSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682761AE5BE05008C6BA6 /* AFURLResponseSerialization.h */; };
 		4F36827E1AE5BE05008C6BA6 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682771AE5BE05008C6BA6 /* AFURLResponseSerialization.m */; };
 		4F36827F1AE5BE05008C6BA6 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682771AE5BE05008C6BA6 /* AFURLResponseSerialization.m */; };
-		4F3682821AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682801AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h */; };
+		4F3682821AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682801AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F3682831AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682801AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h */; };
 		4F3682841AE5BF43008C6BA6 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682811AE5BF43008C6BA6 /* AFNetworkReachabilityManager.m */; };
 		4F3682851AE5BF43008C6BA6 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682811AE5BF43008C6BA6 /* AFNetworkReachabilityManager.m */; };
-		4F36828E1AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682861AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h */; };
+		4F36828E1AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682861AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F36828F1AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682861AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h */; };
 		4F3682901AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682871AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.m */; };
 		4F3682911AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682871AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.m */; };
-		4F3682921AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682881AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h */; };
+		4F3682921AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682881AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F3682931AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682881AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h */; };
 		4F3682941AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682891AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.m */; };
 		4F3682951AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682891AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.m */; };
-		4F3682961AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36828A1AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h */; };
+		4F3682961AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36828A1AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F3682971AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36828A1AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h */; };
 		4F3682981AE5DF30008C6BA6 /* RKHTTPRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F36828B1AE5DF30008C6BA6 /* RKHTTPRequestSerializer.m */; };
 		4F3682991AE5DF30008C6BA6 /* RKHTTPRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F36828B1AE5DF30008C6BA6 /* RKHTTPRequestSerializer.m */; };
-		4F36829A1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36828C1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h */; };
+		4F36829A1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36828C1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F36829B1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36828C1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h */; };
 		4F36829C1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F36828D1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.m */; };
 		4F36829D1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F36828D1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.m */; };
-		4F3682A11AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36829F1AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h */; };
+		4F3682A11AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36829F1AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F3682A21AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F36829F1AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h */; };
 		4F3682A31AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682A01AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.m */; };
 		4F3682A41AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682A01AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.m */; };
-		4F3682A71AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682A51AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h */; };
+		4F3682A71AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682A51AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F3682A81AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3682A51AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h */; };
 		4F3682A91AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682A61AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.m */; };
 		4F3682AA1AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682A61AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.m */; };
@@ -1809,13 +1809,22 @@
 			files = (
 				25160DDB145650490060A5C5 /* RKEntityMapping.h in Headers */,
 				25160DDF145650490060A5C5 /* RKManagedObjectImporter.h in Headers */,
+				4F3682A11AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h in Headers */,
+				4F36828E1AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h in Headers */,
+				4F3682961AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h in Headers */,
+				4F1AF5471AE528C900C8B8C9 /* RKHTTP.h in Headers */,
+				4F3682A71AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h in Headers */,
+				4F3682921AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h in Headers */,
+				4F1AF54D1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h in Headers */,
+				4F36829A1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h in Headers */,
+				4F1AF54F1AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h in Headers */,
+				4F1AF5491AE528C900C8B8C9 /* RKHTTPClient.h in Headers */,
 				25160DE1145650490060A5C5 /* RKManagedObjectStore.h in Headers */,
 				25160DE5145650490060A5C5 /* RKPropertyInspector+CoreData.h in Headers */,
-				4F3682A11AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.h in Headers */,
 				25160E09145650490060A5C5 /* RKDynamicMapping.h in Headers */,
-				4F36828E1AE5DF30008C6BA6 /* RKHTTPJSONRequestSerializer.h in Headers */,
 				25160E0B145650490060A5C5 /* RKErrorMessage.h in Headers */,
 				252CCE7217E0CA2700B7F0BF /* ISO8601DateFormatterValueTransformer.h in Headers */,
+				4F3682821AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h in Headers */,
 				25160E0F145650490060A5C5 /* RKAttributeMapping.h in Headers */,
 				25160E16145650490060A5C5 /* RKMapperOperation.h in Headers */,
 				DB1148441A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */,
@@ -1823,7 +1832,6 @@
 				25160E1A145650490060A5C5 /* RKObjectMapping.h in Headers */,
 				25160E1C145650490060A5C5 /* RKMapping.h in Headers */,
 				25160E1D145650490060A5C5 /* RKMappingOperation.h in Headers */,
-				4F3682961AE5DF30008C6BA6 /* RKHTTPRequestSerializer.h in Headers */,
 				25160E21145650490060A5C5 /* RKMappingResult.h in Headers */,
 				25160E23145650490060A5C5 /* RKPropertyInspector.h in Headers */,
 				25160E25145650490060A5C5 /* RKRelationshipMapping.h in Headers */,
@@ -1838,7 +1846,6 @@
 				25160E4E145650490060A5C5 /* RKSerialization.h in Headers */,
 				25160EE21456532C0060A5C5 /* lcl_RK.h in Headers */,
 				25160F081456532C0060A5C5 /* SOCKit.h in Headers */,
-				4F1AF5471AE528C900C8B8C9 /* RKHTTP.h in Headers */,
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
 				25B408261491CDDC00F21111 /* RKPathUtilities.h in Headers */,
 				25B6E95514CF795D00B1E881 /* RKErrors.h in Headers */,
@@ -1849,30 +1856,25 @@
 				25055B8814EEF32A00B9C4DD /* RKTestFactory.h in Headers */,
 				25055B8F14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h in Headers */,
 				25EC1A3914F72B0900C3CF3F /* RKFetchRequestManagedObjectCache.h in Headers */,
-				4F3682A71AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h in Headers */,
 				25EC1A3D14F72B2800C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
 				257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */,
 				257ABAB61511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				259D98541550C69A008C90F5 /* RKEntityByAttributeCache.h in Headers */,
-				4F3682921AE5DF30008C6BA6 /* RKHTTPJSONResponseSerializer.h in Headers */,
 				259D985E155218E5008C90F5 /* RKEntityCache.h in Headers */,
 				252028FC1577AE0B00076FB4 /* RKRouteSet.h in Headers */,
 				252029031577AE1800076FB4 /* RKRoute.h in Headers */,
 				25FBB852159272DD00955D27 /* RKRouter.h in Headers */,
 				258EA4A815A38BC0007E07A6 /* RKObjectMappingOperationDataSource.h in Headers */,
 				258EA4AE15A38E7E007E07A6 /* RKMappingOperationDataSource.h in Headers */,
-				4F1AF54D1AE5296A00C8B8C9 /* RKHTTPRequestSerialization.h in Headers */,
 				258EA4B215A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */,
 				2597F99C15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */,
 				25AFF8F115B4CF1F0051877F /* RKMappingErrors.h in Headers */,
 				5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */,
-				4F36829A1AE5DF30008C6BA6 /* RKHTTPResponseSerializer.h in Headers */,
 				25104F1F15C30CD900829135 /* RKSearchWord.h in Headers */,
 				25104F2915C30D1700829135 /* RKManagedObjectStore+RKSearchAdditions.h in Headers */,
 				25104F2F15C30E7400829135 /* RKSearchIndexer.h in Headers */,
 				25104F3515C30EF500829135 /* RKSearchPredicate.h in Headers */,
-				4F1AF54F1AE5296A00C8B8C9 /* RKHTTPResponseSerialization.h in Headers */,
 				25104F3B15C30F2100829135 /* RKSearchWordEntity.h in Headers */,
 				25F53AE215E7B612008B54E6 /* RKHTTPUtilities.h in Headers */,
 				2598888D15EC169E006CAE95 /* RKPropertyMapping.h in Headers */,
@@ -1884,7 +1886,6 @@
 				254372C415F54C3F006E8424 /* RKObjectRequestOperation.h in Headers */,
 				254372C815F54C3F006E8424 /* RKRequestDescriptor.h in Headers */,
 				254372CC15F54C3F006E8424 /* RKResponseDescriptor.h in Headers */,
-				4F1AF5491AE528C900C8B8C9 /* RKHTTPClient.h in Headers */,
 				254372D015F54C3F006E8424 /* RKResponseMapperOperation.h in Headers */,
 				254372D615F54CE3006E8424 /* RKManagedObjectRequestOperation.h in Headers */,
 				2595B46F15F670530087A59B /* RKMIMETypeSerialization.h in Headers */,
@@ -1908,7 +1909,6 @@
 				25A199D416ED035A00792629 /* RKBenchmark.h in Headers */,
 				25C6C0BD1716F6F800C98A73 /* TKEvent.h in Headers */,
 				25C6C0C11716F6F800C98A73 /* TKState.h in Headers */,
-				4F3682821AE5BF43008C6BA6 /* AFNetworkReachabilityManager.h in Headers */,
 				25C6C0C51716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				4F3682781AE5BE05008C6BA6 /* AFURLRequestSerialization.h in Headers */,
 				25C6C0CB1716F6F800C98A73 /* TransitionKit.h in Headers */,
