@@ -23,8 +23,20 @@
 #import "lcl_RK.h"
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
+#import "RKHTTPJSONResponseSerializer.h"
+
+typedef enum {
+    RKOperationPausedState      = -1,
+    RKOperationReadyState       = 1,
+    RKOperationExecutingState   = 2,
+    RKOperationFinishedState    = 3,
+} _RKOperationState;
+
+typedef signed short RKOperationState;
 
 extern NSString * const RKErrorDomain;
+
+static NSString * const kRKNetworkingLockName = @"com.restkit.networking.operation.lock";
 
 // Set Logging Component
 #undef RKLogComponent
@@ -43,6 +55,7 @@ const NSMutableIndexSet *acceptableStatusCodes;
 const NSMutableSet *acceptableContentTypes;
 
 @interface RKHTTPRequestOperation ()
+@property (readwrite, nonatomic, assign) RKOperationState state;
 @property (readwrite, nonatomic, strong) NSError *rkHTTPError;
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
 @property (readwrite, nonatomic, strong) NSHTTPURLResponse *response;
@@ -52,6 +65,8 @@ const NSMutableSet *acceptableContentTypes;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @property (nonatomic, strong) id operation;
 @property (nonatomic) BOOL supportsSession;
+@property (nonatomic, readwrite) BOOL isExecuting;
+@property (nonatomic, readwrite) BOOL isFinished;
 
 @end
 
@@ -66,7 +81,13 @@ const NSMutableSet *acceptableContentTypes;
         return nil;
     }
     
+    self.isExecuting = NO;
+    self.isFinished = NO;
+    self.lock = [[NSRecursiveLock alloc] init];
+    self.lock.name = kRKNetworkingLockName;
     self.request = urlRequest;
+    
+    self.state = RKOperationReadyState;
     
     return self;
 }
@@ -75,24 +96,106 @@ const NSMutableSet *acceptableContentTypes;
 {
     return YES;
 }
-
-- (void)pause{
+- (void)pause {
+    if ([self isPaused] || [self isFinished] || [self isCancelled]) {
+        return;
+    }
     
+    [self.lock lock];
+    
+    if ([self isExecuting]) {
+        //Pause
+    }
+    
+    self.state = RKOperationPausedState;
+    
+    [self.lock unlock];
 }
 
-- (BOOL)isPaused{
-    
+- (BOOL)isPaused {
+    return self.state == RKOperationPausedState;
 }
 
-- (void)resume{
+- (void)resume {
+    if (![self isPaused]) {
+        return;
+    }
     
+    [self.lock lock];
+    self.state = RKOperationReadyState;
+    
+    [self start];
+    [self.lock unlock];
 }
 
-- (void)main{
-    
-    
-    
+#pragma mark - NSOperation
+
+- (BOOL)isReady {
+    return self.state == RKOperationReadyState && [super isReady];
 }
+
+- (BOOL)isExecuting {
+    return self.state == RKOperationExecutingState;
+}
+
+- (BOOL)isFinished {
+    return self.state == RKOperationFinishedState;
+}
+
+- (BOOL)isConcurrent {
+    return YES;
+}
+
+- (void)start {
+    [self.lock lock];
+    if ([self isReady]) {
+        self.state = RKOperationExecutingState;
+        
+        [self willChangeValueForKey:@"isExecuting"];
+        _isExecuting = YES;
+        [self didChangeValueForKey:@"isExecuting"];
+//        
+//        ^(NSData *data, NSURLResponse *response, NSError *error) {
+//            
+//            RKHTTPJSONResponseSerializer *serializer = [RKHTTPJSONResponseSerializer serializer];
+//            
+//            self.responseObject = [serializer responseObjectForResponse:response data:data error:&error];
+//            
+//            self.response = (NSHTTPURLResponse*) response;
+//            [self finish];
+//            
+//        }
+    }
+    [self.lock unlock];
+}
+
+
+- (void)finish {
+    self.state = RKOperationFinishedState;
+    
+    [self willChangeValueForKey:@"isExecuting"];
+    _isExecuting = NO;
+    [self didChangeValueForKey:@"isExecuting"];
+    
+    [self willChangeValueForKey:@"isFinished"];
+    _isFinished = YES;
+    [self didChangeValueForKey:@"isFinished"];
+}
+
+- (void)cancel {
+    [self.lock lock];
+    if (![self isFinished] && ![self isCancelled]) {
+        [self willChangeValueForKey:@"isCancelled"];
+        
+        [super cancel];
+        [self didChangeValueForKey:@"isCancelled"];
+        
+        // Cancel the connection on the thread it runs on to prevent race conditions
+        
+    }
+    [self.lock unlock];
+}
+
 
 + (NSIndexSet *)acceptableStatusCodes{
     if(!acceptableStatusCodes){
