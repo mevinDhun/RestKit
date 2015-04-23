@@ -120,7 +120,7 @@
  @param method The HTTP method for the request. This parameter must not be `GET` or `HEAD`, or `nil`.
  @param path The path to be appended to the HTTP client's base URL and used as the request URL.
  @param parameters The parameters to be encoded and set in the request HTTP body.
- @param block A block that takes a single argument and appends data to the HTTP body. The block argument is an object adopting the `AFMultipartFormData` protocol. This can be used to upload files, encode HTTP body as JSON or XML, or specify multiple values for the same parameter, as one might for array values.
+ @param block A block that takes a single argument and appends data to the HTTP body. The block argument is an object adopting the `RKMultipartFormData` protocol. This can be used to upload files, encode HTTP body as JSON or XML, or specify multiple values for the same parameter, as one might for array values.
  
  @return An `NSMutableURLRequest` object
  */
@@ -129,7 +129,13 @@
                                              parameters:(NSDictionary *)parameters
                               constructingBodyWithBlock:(void (^)(id <RKMultipartFormData> formData))block;
 
-- (id)performRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
+
+/**
+ Performs and HTTP request using the supplied request object.
+ @param request A NSURLRequest object that represents the request being made
+ @param completionHandler A callback block on completion of the request. Block parameters represent the unserialized response object, the NSURLResponse and any associated error
+ */
+- (id)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSURLResponse *response, NSError *error))completionHandler;
 
 @end
 
@@ -138,6 +144,6 @@
 
 @property (strong, nonatomic, readonly) NSURLSession *session;
 
-- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSURLResponse *response, NSError *error))completionHandler;
 
 @end

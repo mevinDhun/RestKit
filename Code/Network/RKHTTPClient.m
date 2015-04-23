@@ -8,6 +8,9 @@
 
 #import "RKHTTPClient.h"
 #import "RKHTTPRequestSerializer.h"
+#import "RKHTTPResponseSerializer.h"
+#import "RKHTTPJSONResponseSerializer.h"
+#import "RKHTTPPropertyListResponseSerializer.h"
 
 @interface RKHTTPClient ()
 
@@ -15,6 +18,23 @@
 @property (strong, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
 
 @end
+
+static id<RKHTTPResponseSerialization> RKResponseSerializerForMimeType(NSString *mimeType){
+    
+    if([mimeType isEqualToString:@"application/json"]){
+        return [RKHTTPJSONResponseSerializer serializer];
+    }else if([mimeType isEqualToString:@"application/x-plist"]){
+        return [RKHTTPPropertyListResponseSerializer serializer];
+    }else if([mimeType isEqualToString:@"application/xml"]){
+        return [RKHTTPPropertyListResponseSerializer serializer];
+    }else if([mimeType isEqualToString:@"application/x-www-form-urlencoded"]){
+        return [RKHTTPResponseSerializer serializer];
+    }else{
+        [NSException raise:NSInvalidArgumentException format:@"RKResponseSerializerForMimeType. No serializer registered for mimeType: %@", mimeType];
+    }
+    
+    return nil;
+}
 
 @implementation RKHTTPClient
 
@@ -135,11 +155,27 @@ defaultHeaders = _defaultHeaders;
     return [components string];
 }
 
-- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler{
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSURLResponse *response, NSError *error))completionHandler{
     
     NSURLSession *session = [NSURLSession sharedSession];
     
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:completionHandler];
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        if(completionHandler){
+            
+            id<RKHTTPResponseSerialization> serializer;
+            
+            if(self.responseSerializer){
+                serializer = self.responseSerializer;
+            }else{
+                serializer = RKResponseSerializerForMimeType(response.MIMEType);
+            }
+            
+            id responseObject = [serializer responseObjectForResponse:response data:data error:&error];
+            
+            completionHandler(responseObject, response, error);
+        }
+    }];
     
     [task resume];
 
