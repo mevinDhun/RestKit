@@ -17,11 +17,38 @@
 
 - (void)loadTimeline
 {
+    NSURLSession *session = [NSURLSession sharedSession];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://api.twitter.com/oauth2/token"]];
+    request.HTTPMethod = @"POST";
+    NSString *consumerKey = @"YOUR_CONSUMER_KEY";
+    NSString *consumerSecret = @"YOUR_CONSUMER_SECRET";
+    NSString *creds = [NSString stringWithFormat:@"%@:%@", consumerKey, consumerSecret];
+    NSString *base64Encoded = [[creds dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0];
+    
+    [request setValue:[NSString stringWithFormat:@"Basic %@", base64Encoded] forHTTPHeaderField:@"Authorization"];
+    request.HTTPBody = [@"grant_type=client_credentials" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        NSDictionary *JSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];        
+        [self loadTweets:JSON[@"access_token"]];
+        
+    }] resume];
+}
+
+- (void)loadTweets:(NSString*)token{
+    
     // Load the object model via RestKit
     RKObjectManager *objectManager = [RKObjectManager sharedManager];
+    [objectManager.HTTPClient setDefaultHeader:@"Authorization" value:[NSString stringWithFormat: @"Bearer %@", token]];
 
-    [objectManager getObjectsAtPath:@"/status/user_timeline/RestKit"
-                         parameters:nil
+    NSDictionary *params = @{
+                             @"screen_name" : @"RestKit"
+                             };
+
+    [objectManager getObjectsAtPath:@"/statuses/user_timeline"
+                         parameters:params
                             success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                               NSArray* statuses = [mappingResult array];
                               NSLog(@"Loaded statuses: %@", statuses);

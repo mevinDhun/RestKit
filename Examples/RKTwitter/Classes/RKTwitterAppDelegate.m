@@ -29,7 +29,7 @@
 //    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
   
     // Initialize HTTPClient
-    NSURL *baseURL = [NSURL URLWithString:@"https://twitter.com"];
+    NSURL *baseURL = [NSURL URLWithString:@"https://api.twitter.com/1.1"];
     RKHTTPClient* client = [[RKHTTPClient alloc] initWithBaseURL:baseURL];
     
     // HACK: Set User-Agent to Mac OS X so that Twitter will let us access the Timeline
@@ -73,7 +73,7 @@
     // Register our mappings with the provider using a response descriptor
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:statusMapping
                                                                                             method:RKRequestMethodGET
-                                                                                       pathPattern:@"/status/user_timeline/:username"
+                                                                                       pathPattern:@"/statuses/user_timeline"
                                                                                            keyPath:nil
                                                                                        statusCodes:[NSIndexSet indexSetWithIndex:200]];
     [objectManager addResponseDescriptor:responseDescriptor];
