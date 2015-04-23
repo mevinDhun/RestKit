@@ -383,8 +383,9 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (instancetype)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
 {
     NSParameterAssert(request);
-    NSParameterAssert(responseDescriptors);    
-    return [self initWithHTTPRequestOperation:[[RKHTTPRequestOperation alloc] initWithRequest:request] responseDescriptors:responseDescriptors];
+    NSParameterAssert(responseDescriptors);
+    
+    return [self initWithHTTPRequestOperation:[[RKHTTPRequestOperation alloc] initWithRequest:request HTTPClient:[RKHTTPClient new]] responseDescriptors:responseDescriptors];
 }
 
 - (void)setSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue

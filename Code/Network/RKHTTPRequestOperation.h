@@ -20,6 +20,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RKHTTP.h"
+#import "RKHTTPClient.h"
 
 @protocol RKHTTPResponseSerialization;
 
@@ -31,6 +32,8 @@
  The `RKHTTPRequestOperation` class diverges from the behavior of `AFHTTPRequestOperation` in the implementation of `canProcessRequest`, which is used to determine if a request can be processed. Because `RKHTTPRequestOperation` handles Content Type and Status Code acceptability at the instance rather than the class level, it by default returns `YES` when sent a `canProcessRequest:` method. Subclasses are encouraged to implement more specific logic if constraining the type of requests handled is desired.
  */
 @interface RKHTTPRequestOperation : NSOperation <NSSecureCoding, NSCopying>
+
+@property (readonly, nonatomic) id<RKHTTPClient> HTTPClient;
 
 ///-----------------------------------------
 /// @name Getting URL Connection Information
@@ -121,7 +124,7 @@
  
  @param urlRequest The request object to be used by the operation connection.
  */
-- (instancetype)initWithRequest:(NSURLRequest *)urlRequest NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithRequest:(NSURLRequest *)urlRequest HTTPClient:(id<RKHTTPClient>)HTTPClient NS_DESIGNATED_INITIALIZER;
 
 ///----------------------------------
 /// @name Pausing / Resuming Requests

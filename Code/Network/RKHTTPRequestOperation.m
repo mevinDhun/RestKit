@@ -23,7 +23,6 @@
 #import "lcl_RK.h"
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
-#import "RKHTTPJSONResponseSerializer.h"
 
 typedef enum {
     RKOperationPausedState      = -1,
@@ -57,6 +56,7 @@ const NSMutableSet *acceptableContentTypes;
 @interface RKHTTPRequestOperation ()
 @property (readwrite, nonatomic, assign) RKOperationState state;
 @property (readwrite, nonatomic, strong) NSError *rkHTTPError;
+@property (readwrite, nonatomic, strong) id<RKHTTPClient> HTTPClient;
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
 @property (readwrite, nonatomic, strong) NSHTTPURLResponse *response;
 @property (readwrite, nonatomic, strong) NSError *error;
@@ -72,9 +72,10 @@ const NSMutableSet *acceptableContentTypes;
 
 @implementation RKHTTPRequestOperation
 
-- (instancetype)initWithRequest:(NSURLRequest *)urlRequest {
+- (instancetype)initWithRequest:(NSURLRequest *)urlRequest HTTPClient:(id<RKHTTPClient>)HTTPClient{
     
     NSParameterAssert(urlRequest);
+    NSParameterAssert(HTTPClient);
     
     self = [super init];
     if (!self) {
@@ -86,6 +87,7 @@ const NSMutableSet *acceptableContentTypes;
     self.lock = [[NSRecursiveLock alloc] init];
     self.lock.name = kRKNetworkingLockName;
     self.request = urlRequest;
+    self.HTTPClient = HTTPClient;
     
     self.state = RKOperationReadyState;
     
@@ -154,17 +156,13 @@ const NSMutableSet *acceptableContentTypes;
         [self willChangeValueForKey:@"isExecuting"];
         _isExecuting = YES;
         [self didChangeValueForKey:@"isExecuting"];
-//        
-//        ^(NSData *data, NSURLResponse *response, NSError *error) {
-//            
-//            RKHTTPJSONResponseSerializer *serializer = [RKHTTPJSONResponseSerializer serializer];
-//            
-//            self.responseObject = [serializer responseObjectForResponse:response data:data error:&error];
-//            
-//            self.response = (NSHTTPURLResponse*) response;
-//            [self finish];
-//            
-//        }
+
+        [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSURLResponse *response, NSError *error) {
+            
+            self.responseObject = responseObject;            
+            self.response = (NSHTTPURLResponse*) response;
+            [self finish];
+        }];
     }
     [self.lock unlock];
 }
@@ -262,8 +260,9 @@ const NSMutableSet *acceptableContentTypes;
 
 - (id)initWithCoder:(NSCoder *)decoder {
     NSURLRequest *request = [decoder decodeObjectOfClass:[NSURLRequest class] forKey:NSStringFromSelector(@selector(request))];
+    id<RKHTTPClient> HTTPClient = [decoder decodeObjectOfClass:[NSURLRequest class] forKey:NSStringFromSelector(@selector(HTTPClient))];
     
-    self = [self initWithRequest:request];
+    self = [self initWithRequest:request HTTPClient:HTTPClient];
     if (!self) {
         return nil;
     }
@@ -278,6 +277,7 @@ const NSMutableSet *acceptableContentTypes;
     [self pause];
     
     [coder encodeObject:self.request forKey:NSStringFromSelector(@selector(request))];
+    [coder encodeObject:self.HTTPClient forKey:NSStringFromSelector(@selector(HTTPClient))];
 
     [coder encodeObject:self.response forKey:NSStringFromSelector(@selector(response))];
     [coder encodeObject:self.error forKey:NSStringFromSelector(@selector(error))];
