@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RKHTTPRequestSerialization.h"
-#import "RKHTTPResponseSerialization.h"
+#import "RKSerialization.h"
 #import "RKHTTP.h"
 
 @protocol RKHTTPClient <NSObject>
@@ -26,11 +26,9 @@
 @property (nonatomic) id <RKHTTPRequestSerialization> requestSerializer;
 
 /**
- Responses sent from the server in data tasks created with `dataTaskWithRequest:success:failure:` and run using the `GET` / `POST` / et al. convenience methods are automatically validated and serialized by the response serializer. By default, this property is set to an instance of `AFJSONResponseSerializer`.
- 
- @warning `responseSerializer` must not be `nil`.
+ Responses sent from the server in `performRequest:completionHandler` are automatically validated and serialized by the response serializer class;
  */
-@property (nonatomic) id <RKHTTPResponseSerialization> responseSerializer;
+@property (nonatomic) Class <RKSerialization> responseSerializerClass;
 
 /**
  The default URL credential

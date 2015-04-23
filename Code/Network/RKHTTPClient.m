@@ -11,6 +11,7 @@
 #import "RKHTTPResponseSerializer.h"
 #import "RKHTTPJSONResponseSerializer.h"
 #import "RKHTTPPropertyListResponseSerializer.h"
+#import "RKMIMETypeSerialization.h"
 
 @interface RKHTTPClient ()
 
@@ -19,29 +20,12 @@
 
 @end
 
-static id<RKHTTPResponseSerialization> RKResponseSerializerForMimeType(NSString *mimeType){
-    
-    if([mimeType isEqualToString:@"application/json"]){
-        return [RKHTTPJSONResponseSerializer serializer];
-    }else if([mimeType isEqualToString:@"application/x-plist"]){
-        return [RKHTTPPropertyListResponseSerializer serializer];
-    }else if([mimeType isEqualToString:@"application/xml"]){
-        return [RKHTTPPropertyListResponseSerializer serializer];
-    }else if([mimeType isEqualToString:@"application/x-www-form-urlencoded"]){
-        return [RKHTTPResponseSerializer serializer];
-    }else{
-        [NSException raise:NSInvalidArgumentException format:@"RKResponseSerializerForMimeType. No serializer registered for mimeType: %@", mimeType];
-    }
-    
-    return nil;
-}
-
 @implementation RKHTTPClient
 
 @synthesize
 baseURL = _baseURL,
 requestSerializer = _requestSerializer,
-responseSerializer = _responseSerializer,
+responseSerializerClass = _responseSerializerClass,
 defaultCredential = _defaultCredential,
 allowsInvalidSSLCertificate = _allowsInvalidSSLCertificate,
 defaultSSLPinningMode = _defaultSSLPinningMode,
@@ -163,15 +147,12 @@ defaultHeaders = _defaultHeaders;
         
         if(completionHandler){
             
-            id<RKHTTPResponseSerialization> serializer;
-            
-            if(self.responseSerializer){
-                serializer = self.responseSerializer;
+            id responseObject;
+            if(self.responseSerializerClass){
+                responseObject = [self.responseSerializerClass objectFromData:data error:&error];
             }else{
-                serializer = RKResponseSerializerForMimeType(response.MIMEType);
+                responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
             }
-            
-            id responseObject = [serializer responseObjectForResponse:response data:data error:&error];
             
             completionHandler(responseObject, response, error);
         }
