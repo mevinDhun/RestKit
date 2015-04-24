@@ -139,7 +139,7 @@ defaultHeaders = _defaultHeaders;
     return [components string];
 }
 
-- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSURLResponse *response, NSError *error))completionHandler{
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler{
     
     NSURLSession *session = [NSURLSession sharedSession];
     
@@ -154,7 +154,7 @@ defaultHeaders = _defaultHeaders;
                 responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
             }
             
-            completionHandler(responseObject, response, error);
+            completionHandler(responseObject, data, response, error);
         }
     }];
     

@@ -60,6 +60,8 @@ const NSMutableSet *acceptableContentTypes;
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
 @property (readwrite, nonatomic, strong) NSHTTPURLResponse *response;
 @property (readwrite, nonatomic, strong) NSError *error;
+@property (readwrite, nonatomic, strong) NSData *responseData;
+@property (readwrite, nonatomic, strong) NSString *responseString;
 @property (readwrite, nonatomic, strong) id responseObject;
 @property (readwrite, nonatomic, strong) NSError *responseSerializationError;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
@@ -157,8 +159,10 @@ const NSMutableSet *acceptableContentTypes;
         _isExecuting = YES;
         [self didChangeValueForKey:@"isExecuting"];
 
-        [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSURLResponse *response, NSError *error) {
+        [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
             
+            self.responseData = responseData;
+            self.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
             self.responseObject = responseObject;            
             self.response = (NSHTTPURLResponse*) response;
             [self finish];
