@@ -21,8 +21,8 @@
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://api.twitter.com/oauth2/token"]];
     request.HTTPMethod = @"POST";
-    NSString *consumerKey = @"YOUR_CONSUMER_KEY";
-    NSString *consumerSecret = @"YOUR_CONSUMER_SECRET";
+    NSString *consumerKey = @"";
+    NSString *consumerSecret = @"";
     NSString *creds = [NSString stringWithFormat:@"%@:%@", consumerKey, consumerSecret];
     NSString *base64Encoded = [[creds dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0];
     
@@ -70,6 +70,9 @@
 - (void)loadView
 {
     [super loadView];
+    
+    self.automaticallyAdjustsScrollViewInsets = YES;
+    self.view.backgroundColor = [UIColor whiteColor];
 
     // Setup View and Table View
     self.title = @"RestKit Tweets";
@@ -77,16 +80,10 @@
     self.navigationController.navigationBar.tintColor = [UIColor blackColor];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(loadTimeline)];
 
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]];
-    imageView.frame = CGRectOffset(imageView.frame, 0, -64);
-
-    [self.view insertSubview:imageView atIndex:0];
-
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStylePlain];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStylePlain];
+    _tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [UIColor clearColor];
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:_tableView];
 
     [self loadTimeline];
@@ -98,7 +95,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGSize size = [[[_statuses objectAtIndex:indexPath.row] text] sizeWithFont:[UIFont systemFontOfSize:14] constrainedToSize:CGSizeMake(300, 9000)];
-    return size.height + 30;
+    return size.height + 50;
 }
 
 #pragma mark UITableViewDataSource methods
@@ -116,8 +113,6 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
         cell.textLabel.font = [UIFont systemFontOfSize:14];
         cell.textLabel.numberOfLines = 0;
-        cell.textLabel.backgroundColor = [UIColor clearColor];
-        cell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"listbg.png"]];
     }
     RKTweet* status = [_statuses objectAtIndex:indexPath.row];
     cell.textLabel.text = [status text];
