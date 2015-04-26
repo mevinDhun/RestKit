@@ -19,11 +19,18 @@
 @property (readonly, nonatomic, strong) NSURL *baseURL;
 
 /**
+ HTTP methods for which serialized requests will encode parameters as a query string. `GET`, `HEAD`, and `DELETE` by default.
+ */
+@property (nonatomic, strong) NSSet *HTTPMethodsEncodingParametersInURI;
+
+/**
  Requests created with `requestWithMethod:URLString:parameters:` & `multipartFormRequestWithMethod:URLString:parameters:constructingBodyWithBlock:` are constructed with a set of default headers using a parameter serialization specified by this property. By default, this is set to an instance of `AFHTTPRequestSerializer`, which serializes query string parameters for `GET`, `HEAD`, and `DELETE` requests, or otherwise URL-form-encodes HTTP message bodies.
  
  @warning `requestSerializer` must not be `nil`.
  */
 @property (nonatomic) id <RKHTTPRequestSerialization> requestSerializer;
+
+@property (nonatomic) Class <RKSerialization> requestSerializerClass;
 
 /**
  Responses sent from the server in `performRequest:completionHandler` are automatically validated and serialized by the response serializer class;
@@ -48,7 +55,7 @@
 /**
  The default HTTP headers used 
  **/
-@property (nonatomic, strong) NSMutableDictionary *defaultHeaders;
+@property (readonly, nonatomic, strong) NSDictionary *defaultHeaders;
 
 /**
  Creates and returns an `RKHTTPClient` object.

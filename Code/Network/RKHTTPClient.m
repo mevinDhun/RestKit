@@ -17,6 +17,7 @@
 
 @property (readwrite, nonatomic, strong) NSURL *baseURL;
 @property (strong, nonatomic) NSURLSessionConfiguration *sessionConfiguration;
+@property (readwrite, nonatomic, strong) NSMutableDictionary *defaultHeaders;
 
 @end
 
@@ -24,7 +25,9 @@
 
 @synthesize
 baseURL = _baseURL,
+HTTPMethodsEncodingParametersInURI = _HTTPMethodsEncodingParametersInURI,
 requestSerializer = _requestSerializer,
+requestSerializerClass = _requestSerializerClass,
 responseSerializerClass = _responseSerializerClass,
 defaultCredential = _defaultCredential,
 allowsInvalidSSLCertificate = _allowsInvalidSSLCertificate,
@@ -59,11 +62,15 @@ defaultHeaders = _defaultHeaders;
     self.sessionConfiguration = configuration;
     self.requestSerializer = [RKHTTPRequestSerializer serializer];
     self.defaultHeaders = [NSMutableDictionary new];
+    [self setDefaultHeader:RKMIMETypeJSON value:@"Content-Type"];
+    
+    // HTTP Method Definitions; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+    self.HTTPMethodsEncodingParametersInURI = [NSSet setWithObjects:@"GET", @"HEAD", @"DELETE", nil];
     
     return self;
 }
 
-- (void)setDefaultHeader:(NSString *)header
+- (void)addDefaultHeader:(NSString *)header
                    value:(NSString *)value{
     
     if(!value){
@@ -81,6 +88,18 @@ defaultHeaders = _defaultHeaders;
     }
 }
 
+- (void)setDefaultHeader:(NSString *)header
+                   value:(NSString *)value{
+    
+    if(!value){
+        [self.defaultHeaders removeObjectForKey:header];
+        return;
+    }
+    
+    //Set the header to the new value
+    self.defaultHeaders[header] = [NSMutableArray arrayWithObjects:value, nil];
+}
+
 ///-------------------------------
 /// @name Creating Request Objects
 ///-------------------------------
@@ -89,21 +108,45 @@ defaultHeaders = _defaultHeaders;
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters{
     
-    NSError *error;
+    NSError *error;    
+    NSString *URLString = [self URLStringByAppendingPath:path];
     
-    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method
-                                                                   URLString:[self URLStringByAppendingPath: path]
-                                                                  parameters:parameters
-                                                                       error:&error];;
-    if(error){
-        NSLog(@"%@", error.localizedDescription);
-    }
+    //Construct an NSMutableURLRequest
+    NSMutableURLRequest *request = [NSMutableURLRequest new];
+    request.HTTPMethod = method;
+    request.URL = [NSURL URLWithString:URLString];
     
-    for(NSString *key in self.defaultHeaders){
-        NSArray *values = self.defaultHeaders[key];
+    //Set default HTTP headers in the request
+    [self.defaultHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id values, BOOL * __unused stop) {
         
         for(NSString *value in values){
-            [request addValue:value forHTTPHeaderField:key];
+            [request addValue:value forHTTPHeaderField:field];
+        }
+    }];
+    
+    //Detect the request mime type and default ot JSON if not set
+    NSString *MIMEType = [request valueForHTTPHeaderField:@"Content-Type"];
+    if(!MIMEType){
+        MIMEType = RKMIMETypeJSON;
+        [request setValue:MIMEType forHTTPHeaderField:@"Content-Type"];
+    }
+    
+    //Are we parameterizing the querystring or the HTTP Body
+    if([self.HTTPMethodsEncodingParametersInURI containsObject:[method uppercaseString]]){
+        
+        BOOL hasQueryString = [URLString containsString:@"?"];
+        NSData *queryStringData = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
+        NSString *queryString = [[NSString alloc] initWithData:queryStringData encoding:NSUTF8StringEncoding];
+        
+        URLString = [NSString stringWithFormat:hasQueryString ? @"%@&%@" : @"%@?%@", URLString, queryString];
+        request.URL = [NSURL URLWithString:URLString];
+        
+    //Else encode body with serializer
+    }else{
+        if(self.requestSerializerClass){
+            request.HTTPBody = [self.requestSerializerClass dataFromObject: parameters error: &error];
+        }else{
+            request.HTTPBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:MIMEType error:&error];
         }
     }
     
