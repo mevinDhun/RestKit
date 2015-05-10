@@ -62,7 +62,6 @@ defaultHeaders = _defaultHeaders;
     self.sessionConfiguration = configuration;
     self.requestSerializer = [RKHTTPRequestSerializer serializer];
     self.defaultHeaders = [NSMutableDictionary new];
-    [self setDefaultHeader:RKMIMETypeJSON value:@"Content-Type"];
     
     // HTTP Method Definitions; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
     self.HTTPMethodsEncodingParametersInURI = [NSSet setWithObjects:@"GET", @"HEAD", @"DELETE", nil];
