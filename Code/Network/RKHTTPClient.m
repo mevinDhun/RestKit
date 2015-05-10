@@ -130,6 +130,11 @@ defaultHeaders = _defaultHeaders;
         [request setValue:MIMEType forHTTPHeaderField:@"Content-Type"];
     }
     
+    //If no parameters, return request as-is
+    if(!parameters){
+        return request;
+    }
+    
     //Are we parameterizing the querystring or the HTTP Body
     if([self.HTTPMethodsEncodingParametersInURI containsObject:[method uppercaseString]]){
         
