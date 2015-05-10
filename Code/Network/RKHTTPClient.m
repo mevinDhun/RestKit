@@ -134,12 +134,12 @@ defaultHeaders = _defaultHeaders;
     //Are we parameterizing the querystring or the HTTP Body
     if([self.HTTPMethodsEncodingParametersInURI containsObject:[method uppercaseString]]){
         
-        BOOL hasQueryString = [URLString containsString:@"?"];
+        BOOL hasQueryString     = [URLString containsString:@"?"];
         NSData *queryStringData = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
-        NSString *queryString = [[NSString alloc] initWithData:queryStringData encoding:NSUTF8StringEncoding];
+        NSString *queryString   = [[NSString alloc] initWithData:queryStringData encoding:NSUTF8StringEncoding];
         
-        URLString = [NSString stringWithFormat:hasQueryString ? @"%@&%@" : @"%@?%@", URLString, queryString];
-        request.URL = [NSURL URLWithString:URLString];
+        URLString               = [NSString stringWithFormat:hasQueryString ? @"%@&%@" : @"%@?%@", URLString, queryString];
+        request.URL             = [NSURL URLWithString:URLString];
         
     //Else encode body with serializer
     }else{

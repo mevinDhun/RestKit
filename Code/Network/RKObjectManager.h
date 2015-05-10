@@ -22,7 +22,6 @@
 #import "RKPaginator.h"
 #import "RKMacros.h"
 #import "RKHTTPClient.h"
-#import "AFNetworkReachabilityManager.h"
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")
@@ -871,12 +870,3 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 @end
 
-#ifdef _SYSTEMCONFIGURATION_H
-/**
- Returns a string description of the given network status.
-
- @param networkReachabilityStatus The network reachability status.
- @return A string describing the reachability status.
- */
-NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus networkReachabilityStatus);
-#endif
