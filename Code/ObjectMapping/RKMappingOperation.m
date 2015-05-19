@@ -32,7 +32,6 @@
 #import "RKObjectUtilities.h"
 #import "RKValueTransformers.h"
 #import "RKDictionaryUtilities.h"
-#import "NSObject+KVCArray.h"
 
 // Set Logging Component
 #undef RKLogComponent
