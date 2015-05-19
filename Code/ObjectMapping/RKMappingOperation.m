@@ -761,7 +761,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             continue;
         }
 
-        id value = (sourceKeyPath == nil) ? [sourceObject valueForKey:@"self"] : [sourceObject valueForIndexedKeyPath:sourceKeyPath];
+        id value = (sourceKeyPath == nil) ? [sourceObject valueForKey:@"self"] : [self valueForIndexedKeyPath:sourceKeyPath forObject:sourceObject];
         if ([self applyAttributeMapping:attributeMapping withValue:value]) {
             appliedMappings = YES;
         } else {
@@ -786,6 +786,70 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     }
 
     return appliedMappings;
+}
+
+- (id)valueForIndexedKeyPath:(NSString *)keyPath forObject:(id)object
+{
+    //Try default KVC first, if it contains [\d+] then it won't match
+    id value = [object valueForKeyPath:keyPath];
+    if(value == nil){
+        return value;
+    }
+    
+    //Match all [\d+]
+    NSRegularExpression *testExpression = [NSRegularExpression regularExpressionWithPattern: @"\\[(\\d+)\\]" options:0 error:nil];
+    NSArray *matches = [testExpression matchesInString:keyPath
+                                               options:0
+                                                 range:NSMakeRange(0, [keyPath length])];
+    
+    //If no indexes found return nil
+    if(!matches.count){
+        return nil;
+    }
+    
+    value = object;
+    NSUInteger offset = 0;
+    int i = 0;
+    
+    for (NSTextCheckingResult *result in matches) {
+        NSRange range = [result rangeAtIndex:1];
+        
+        NSString *keyPathPart = [keyPath substringWithRange:NSMakeRange(offset, range.location - 1 - offset)];
+        
+        //Set the new offset in case there are more matches
+        offset = range.location + range.length+2; //+2 for ].
+        
+        //Get the regular KVC value
+        value = [value valueForKeyPath:keyPathPart];
+        
+        //If value is not an array, bail out
+        if(![value isKindOfClass:[NSArray class]]){
+            NSLog(@"Key Path %@ contains array access, but value is not an array: %@", keyPath, value);
+            value = nil;
+            break;
+        }
+        
+        //Ensure index exists in array
+        NSArray *array = (NSArray*)value;
+        NSUInteger index = [[keyPath substringWithRange:range] integerValue];
+        if(index >= array.count){
+            NSLog(@"Key Path %@ contains array access to index: %lu but array contains only %lu items. %@", keyPath, (unsigned long)index, (unsigned long)array.count, array);
+            value = nil;
+            break;
+        }
+        
+        //Assign new value as index of array
+        value = array[index];
+        
+        //If this is the last match, attempt to KVC the rest of the key path
+        if(i == matches.count-1){
+            value = [value valueForKeyPath:[keyPath substringWithRange:NSMakeRange(offset, keyPath.length - offset)]];
+        }
+        
+        i++;
+    }
+    
+    return value;
 }
 
 - (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject parent:(id)parentSourceObject withRelationshipMapping:(RKRelationshipMapping *)relationshipMapping metadataList:(NSArray *)metadataList
