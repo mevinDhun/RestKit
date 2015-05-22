@@ -326,7 +326,10 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     BOOL isCollection = [mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]];
     BOOL containsTargetObject = isCollection && self.targetObject && [mappableValue count] == 1;
     
-    if (!containsTargetObject && (mapping.forceCollectionMapping || isCollection)) {
+    if(isCollection && containsTargetObject){
+        RKLogDebug(@"Found mappable data at keyPath '%@': %@", keyPath, mappableValue);
+        mappingResult = [self mapRepresentation:[mappableValue firstObject] atKeyPath:keyPath usingMapping:mapping];
+    }else if (mapping.forceCollectionMapping || isCollection) {
         RKLogDebug(@"Found mappable collection at keyPath '%@': %@", keyPath, mappableValue);
         mappingResult = [self mapRepresentations:mappableValue atKeyPath:keyPath usingMapping:mapping];
     } else {
