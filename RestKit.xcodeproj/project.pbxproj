@@ -585,8 +585,6 @@
 		4F3682AA1AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682A61AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.m */; };
 		4F3682AF1AE67413008C6BA6 /* RKHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682AC1AE67413008C6BA6 /* RKHTTPClient.m */; };
 		4F3682B01AE67413008C6BA6 /* RKHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F3682AC1AE67413008C6BA6 /* RKHTTPClient.m */; };
-		4FCCFE171B08FAF6001874F2 /* NSObject+KVCArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FCCFE151B08FAF6001874F2 /* NSObject+KVCArray.h */; };
-		4FCCFE181B08FAF6001874F2 /* NSObject+KVCArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FCCFE161B08FAF6001874F2 /* NSObject+KVCArray.m */; };
 		54CDB45B17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45C17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45D17B408B100FAC285 /* RKStringTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */; };
@@ -982,8 +980,6 @@
 		4F3682A51AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHTTPPropertyListResponseSerializer.h; sourceTree = "<group>"; };
 		4F3682A61AE5E033008C6BA6 /* RKHTTPPropertyListResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPPropertyListResponseSerializer.m; sourceTree = "<group>"; };
 		4F3682AC1AE67413008C6BA6 /* RKHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPClient.m; sourceTree = "<group>"; };
-		4FCCFE151B08FAF6001874F2 /* NSObject+KVCArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+KVCArray.h"; sourceTree = "<group>"; };
-		4FCCFE161B08FAF6001874F2 /* NSObject+KVCArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+KVCArray.m"; sourceTree = "<group>"; };
 		54CDB45917B408B100FAC285 /* RKStringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKStringTokenizer.h; sourceTree = "<group>"; };
 		54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKStringTokenizer.m; sourceTree = "<group>"; };
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
@@ -1245,8 +1241,6 @@
 				2598888C15EC169E006CAE95 /* RKPropertyMapping.m */,
 				25A226D41618A57500952D72 /* RKObjectUtilities.h */,
 				25A226D51618A57500952D72 /* RKObjectUtilities.m */,
-				4FCCFE151B08FAF6001874F2 /* NSObject+KVCArray.h */,
-				4FCCFE161B08FAF6001874F2 /* NSObject+KVCArray.m */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
@@ -1850,7 +1844,6 @@
 				252CCE7617E0CA2700B7F0BF /* RKISO8601DateFormatter.h in Headers */,
 				25160E4C145650490060A5C5 /* RKMIMETypes.h in Headers */,
 				25160E4E145650490060A5C5 /* RKSerialization.h in Headers */,
-				4FCCFE171B08FAF6001874F2 /* NSObject+KVCArray.h in Headers */,
 				25160EE21456532C0060A5C5 /* lcl_RK.h in Headers */,
 				25160F081456532C0060A5C5 /* SOCKit.h in Headers */,
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
@@ -2341,7 +2334,6 @@
 				25FABED114E3796400E609E7 /* RKTestNotificationObserver.m in Sources */,
 				25CA7A8F14EC570200888FF8 /* RKMapping.m in Sources */,
 				4F3682A31AE5E004008C6BA6 /* RKHTTPPropertyListRequestSerializer.m in Sources */,
-				4FCCFE181B08FAF6001874F2 /* NSObject+KVCArray.m in Sources */,
 				25055B8614EEF32A00B9C4DD /* RKMappingTest.m in Sources */,
 				25055B8A14EEF32A00B9C4DD /* RKTestFactory.m in Sources */,
 				25055B9114EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m in Sources */,
