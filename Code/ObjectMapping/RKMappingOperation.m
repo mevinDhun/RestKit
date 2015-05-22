@@ -791,7 +791,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 {
     //Try default KVC first, if it contains [\d+] then it won't match
     id value = [object valueForKeyPath:keyPath];
-    if(value == nil){
+    if(value != nil){
         return value;
     }
     
