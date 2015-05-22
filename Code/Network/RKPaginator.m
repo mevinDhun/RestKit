@@ -191,7 +191,8 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 #ifdef RKCoreDataIncluded
     if (self.managedObjectContext) {
-        RKHTTPRequestOperation *requestOperation = [[self.HTTPOperationClass alloc] initWithRequest:mutableRequest];
+        RKHTTPClient *HTTPClient = [RKHTTPClient new];
+        RKHTTPRequestOperation *requestOperation = [[self.HTTPOperationClass alloc] initWithRequest:mutableRequest HTTPClient:HTTPClient];
         RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:self.responseDescriptors];
         managedObjectRequestOperation.managedObjectContext = self.managedObjectContext;
         managedObjectRequestOperation.managedObjectCache = self.managedObjectCache;
