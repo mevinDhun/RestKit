@@ -192,21 +192,27 @@ defaultHeaders = _defaultHeaders;
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
-        if(completionHandler){
-            
-            id responseObject;
-            if(self.responseSerializerClass){
-                responseObject = [self.responseSerializerClass objectFromData:data error:&error];
-            }else{
-                responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
-            }
-            
-            completionHandler(responseObject, data, response, error);
+        if(!completionHandler){
+            return;
         }
+        
+        if(error){
+            completionHandler(nil, data, response, error);
+            return;
+        }
+        
+        id responseObject;
+        if(self.responseSerializerClass){
+            responseObject = [self.responseSerializerClass objectFromData:data error:&error];
+        }else{
+            responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
+        }
+        
+        completionHandler(responseObject, data, response, error);
     }];
     
     [task resume];
-
+    
     return task;
 }
 
