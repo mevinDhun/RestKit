@@ -107,7 +107,7 @@ defaultHeaders = _defaultHeaders;
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters{
     
-    NSError *error;    
+    NSError *error;
     NSString *URLString = [self URLStringByAppendingPath:path];
     
     //Construct an NSMutableURLRequest
@@ -145,7 +145,7 @@ defaultHeaders = _defaultHeaders;
         URLString               = [NSString stringWithFormat:hasQueryString ? @"%@&%@" : @"%@?%@", URLString, queryString];
         request.URL             = [NSURL URLWithString:URLString];
         
-    //Else encode body with serializer
+        //Else encode body with serializer
     }else{
         if(self.requestSerializerClass){
             request.HTTPBody = [self.requestSerializerClass dataFromObject: parameters error: &error];
@@ -197,7 +197,7 @@ defaultHeaders = _defaultHeaders;
         }
         
         if(error){
-            completionHandler(nil, data, response, error);
+            completionHandler(nil, nil, nil, error);
             return;
         }
         
