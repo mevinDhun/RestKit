@@ -107,7 +107,7 @@ defaultHeaders = _defaultHeaders;
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters{
     
-    NSError *error;    
+    NSError *error;
     NSString *URLString = [self URLStringByAppendingPath:path];
     
     //Construct an NSMutableURLRequest
@@ -145,7 +145,7 @@ defaultHeaders = _defaultHeaders;
         URLString               = [NSString stringWithFormat:hasQueryString ? @"%@&%@" : @"%@?%@", URLString, queryString];
         request.URL             = [NSURL URLWithString:URLString];
         
-    //Else encode body with serializer
+        //Else encode body with serializer
     }else{
         if(self.requestSerializerClass){
             request.HTTPBody = [self.requestSerializerClass dataFromObject: parameters error: &error];
@@ -192,21 +192,27 @@ defaultHeaders = _defaultHeaders;
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
-        if(completionHandler){
-            
-            id responseObject;
-            if(self.responseSerializerClass){
-                responseObject = [self.responseSerializerClass objectFromData:data error:&error];
-            }else{
-                responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
-            }
-            
-            completionHandler(responseObject, data, response, error);
+        if(!completionHandler){
+            return;
         }
+        
+        if(error){
+            completionHandler(nil, nil, nil, error);
+            return;
+        }
+        
+        id responseObject;
+        if(self.responseSerializerClass){
+            responseObject = [self.responseSerializerClass objectFromData:data error:&error];
+        }else{
+            responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
+        }
+        
+        completionHandler(responseObject, data, response, error);
     }];
     
     [task resume];
-
+    
     return task;
 }
 
