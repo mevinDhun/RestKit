@@ -165,6 +165,7 @@ const NSMutableSet *acceptableContentTypes;
             self.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
             self.responseObject = responseObject;            
             self.response = (NSHTTPURLResponse*) response;
+            self.error = error;
             [self finish];
         }];
     }
