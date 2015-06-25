@@ -248,18 +248,6 @@ static void RKDecrementNetworkAcitivityIndicator()
     #endif
 }
 
-static NSIndexSet *RKAcceptableStatusCodesFromResponseDescriptors(NSArray *responseDescriptors)
-{
-    // If there are no response descriptors or any descriptor matches any status code (expressed by `statusCodes` == `nil`) then we want to accept anything
-    if ([responseDescriptors count] == 0 || [[responseDescriptors valueForKey:@"statusCodes"] containsObject:[NSNull null]]) return nil;
-    
-    NSMutableIndexSet *acceptableStatusCodes = [NSMutableIndexSet indexSet];
-    [responseDescriptors enumerateObjectsUsingBlock:^(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
-        [acceptableStatusCodes addIndexes:responseDescriptor.statusCodes];
-    }];
-    return acceptableStatusCodes;
-}
-
 static NSString *RKStringForStateOfObjectRequestOperation(RKObjectRequestOperation *operation)
 {
     if ([operation isExecuting]) {
@@ -350,10 +338,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     if (self) {
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
-        self.HTTPRequestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
-        self.HTTPRequestOperation.acceptableStatusCodes = RKAcceptableStatusCodesFromResponseDescriptors(responseDescriptors);
-        self.HTTPRequestOperation.successCallbackQueue = [[self class] dispatchQueue];
-        self.HTTPRequestOperation.failureCallbackQueue = [[self class] dispatchQueue];
         
         __weak __typeof(self)weakSelf = self;
         self.stateMachine = [[RKOperationStateMachine alloc] initWithOperation:self dispatchQueue:[[self class] dispatchQueue]];
@@ -567,20 +551,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (void)willFinish
 {
     // Default implementation does nothing
-}
-
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone *)zone {
-    RKObjectRequestOperation *operation = [(RKObjectRequestOperation *)[[self class] allocWithZone:zone] initWithHTTPRequestOperation:[self.HTTPRequestOperation copyWithZone:zone] responseDescriptors:self.responseDescriptors];
-    operation.targetObject = self.targetObject;
-    operation.mappingMetadata = self.mappingMetadata;
-    operation.successCallbackQueue = self.successCallbackQueue;
-    operation.failureCallbackQueue = self.failureCallbackQueue;
-    operation.willMapDeserializedResponseBlock = self.willMapDeserializedResponseBlock;
-    [operation setCompletionBlockWithSuccess:self.successBlock failure:self.failureBlock];
-
-    return operation;
 }
 
 #pragma mark - NSOperation

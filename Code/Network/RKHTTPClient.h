@@ -28,29 +28,21 @@
  
  @warning `requestSerializer` must not be `nil`.
  */
+//@TODO: This is still needed for multipart uploads, we need to refactor this out to not depend on AFN
 @property (nonatomic) id <RKHTTPRequestSerialization> requestSerializer;
 
+/**
+ Requests created with `requestWithMethod:URLString:parameters:` & `multipartFormRequestWithMethod:URLString:parameters:constructingBodyWithBlock:` are constructed with a set of default headers using a parameter serialization specified by this property. By default, this serializes query string parameters for `GET`, `HEAD`, and `DELETE` requests, or otherwise uses this class if specified or selects an appropriate serializer from RKMIMETypeSerialization:dataFromObject:mimeType.
+ Custom serializers can be registered with RKMIMETypeSerialization using RKMIMETYpeSerialization:registerClass:formMIMEType.
+ */
 @property (nonatomic) Class <RKSerialization> requestSerializerClass;
 
 /**
- Responses sent from the server in `performRequest:completionHandler` are automatically validated and serialized by the response serializer class;
+ Responses from the server are passed through this class using RKSerialization:objectFromData:MIMEType to convert from string to an object.
+ RKMIMETypeSerialization selects an appropriate serializer from RKMIMETypeSerialization:dataFromObject:mimeType, or uses this class if specified.
+ Custom serializers can be registered with RKMIMETypeSerialization using RKMIMETYpeSerialization:registerClass:formMIMEType.
  */
 @property (nonatomic) Class <RKSerialization> responseSerializerClass;
-
-/**
- The default URL credential
- **/
-@property (nonatomic, strong) NSURLCredential *defaultCredential;
-
-/**
- Whether each `RKHTTPRequestOperation` created by `HTTPRequestOperationWithRequest:success:failure:` should accept an invalid SSL certificate.
- */
-@property (nonatomic, assign) BOOL allowsInvalidSSLCertificate;
-
-/**
- Default SSL pinning mode for each `RKHTTPRequestOperation` created by `HTTPRequestOperationWithRequest:success:failure:`.
- */
-@property (nonatomic, assign) RKSSLPinningMode defaultSSLPinningMode;
 
 /**
  The default HTTP headers used 

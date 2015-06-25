@@ -29,9 +29,6 @@ HTTPMethodsEncodingParametersInURI = _HTTPMethodsEncodingParametersInURI,
 requestSerializer = _requestSerializer,
 requestSerializerClass = _requestSerializerClass,
 responseSerializerClass = _responseSerializerClass,
-defaultCredential = _defaultCredential,
-allowsInvalidSSLCertificate = _allowsInvalidSSLCertificate,
-defaultSSLPinningMode = _defaultSSLPinningMode,
 defaultHeaders = _defaultHeaders;
 
 ///-------------------------------

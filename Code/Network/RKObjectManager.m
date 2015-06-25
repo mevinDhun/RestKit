@@ -515,14 +515,6 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
 }
 
 #pragma mark - Object Request Operations
-
-- (void)copyStateFromHTTPClientToHTTPRequestOperation:(RKHTTPRequestOperation *)operation
-{
-    operation.credential = self.HTTPClient.defaultCredential;
-    operation.allowsInvalidSSLCertificate = self.HTTPClient.allowsInvalidSSLCertificate;
-    operation.SSLPinningMode = self.HTTPClient.defaultSSLPinningMode;
-}
-
 - (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
@@ -537,7 +529,6 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
 {
     Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request HTTPClient:self.HTTPClient];
-    [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredObjectRequestOperationClasses] ?: [RKObjectRequestOperation class];
     RKObjectRequestOperation *operation = [[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
@@ -561,7 +552,6 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
 {
     Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request HTTPClient:self.HTTPClient];
-    [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredManagedObjectRequestOperationClasses] ?: [RKManagedObjectRequestOperation class];
     RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
