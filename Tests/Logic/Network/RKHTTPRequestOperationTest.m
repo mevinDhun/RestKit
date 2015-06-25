@@ -7,6 +7,7 @@
 //
 
 #import "RKTestEnvironment.h"
+#import "RKHTTPResponseSerialization.h"
 #import "RKHTTPRequestOperation.h"
 
 @interface RKHTTPRequestOperationTest : XCTestCase
@@ -18,9 +19,12 @@
 - (void)testThatLoadingAnUnexpectedContentTypeReturnsCorrectErrorMessage
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/XML/channels.xml" relativeToURL:[RKTestFactory baseURL]]];
-    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"application/json"];
-    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request HTTPClient:[RKHTTPClient new]];
+    //    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request]; // FIXME: PTC 20150526 review required
+    requestOperation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/json"];
+    requestOperation.responseSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+//    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"application/json"]; // FIXME PTC 20150625 review
+//    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200]; // FIXME PTC 20150625 review
     [requestOperation start];
     [requestOperation waitUntilFinished];
     
@@ -31,9 +35,12 @@
 - (void)testThatLoadingAnUnexpectedStatusCodeReturnsCorrectErrorMessage
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/503" relativeToURL:[RKTestFactory baseURL]]];
-    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
-    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request HTTPClient:[RKHTTPClient new]];
+    //    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request]; // FIXME: PTC 20150526 review required
+    requestOperation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.responseSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+//    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"]; // FIXME PTC 20150625 review
+//    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200]; // FIXME PTC 20150625 review
     [requestOperation start];
     [requestOperation waitUntilFinished];
     
@@ -45,9 +52,12 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/200" relativeToURL:[RKTestFactory baseURL]]];
     request.HTTPMethod = RKStringFromRequestMethod(RKRequestMethodHEAD);
-    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
-    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request HTTPClient:[RKHTTPClient new]];
+    //    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request]; // FIXME: PTC 20150526 review required
+    requestOperation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.responseSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+//    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"]; // FIXME PTC 20150625 review
+//    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200]; // FIXME PTC 20150625 review
     [requestOperation start];
     [requestOperation waitUntilFinished];
     
@@ -57,9 +67,12 @@
 - (void)testThatLoadingA304StatusDoesNotReturnExpectedContentTypeErrorWithMissingContentType
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/304" relativeToURL:[RKTestFactory baseURL]]];
-    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
-    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:304];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request HTTPClient:[RKHTTPClient new]];
+    //    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request]; // FIXME: PTC 20150526 review required
+    requestOperation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.responseSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:304];
+//    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"]; // FIXME PTC 20150625 review
+//    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:304]; // FIXME PTC 20150625 review
     [requestOperation start];
     [requestOperation waitUntilFinished];
     
@@ -69,9 +82,12 @@
 - (void)testThatLoadingA204StatusDoesNotReturnExpectedContentTypeErrorWithMissingContentType
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/204" relativeToURL:[RKTestFactory baseURL]]];
-    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
-    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:204];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request HTTPClient:[RKHTTPClient new]];
+    //    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request]; // FIXME: PTC 20150526 review required
+    requestOperation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.responseSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:204];
+//    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"]; // FIXME PTC 20150625 review
+//    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:204]; // FIXME PTC 20150625 review
     [requestOperation start];
     [requestOperation waitUntilFinished];
     
@@ -81,9 +97,12 @@
 - (void)testThatLoadingA202StatusDoesNotReturnExpectedContentTypeErrorWithMissingContentType
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/202" relativeToURL:[RKTestFactory baseURL]]];
-    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
-    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:202];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request HTTPClient:[RKHTTPClient new]];
+    //    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request]; // FIXME: PTC 20150526 review required
+    requestOperation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.responseSerializer.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:202];
+//    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"]; // FIXME PTC 20150625 review
+//    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:202]; // FIXME PTC 20150625 review
     [requestOperation start];
     [requestOperation waitUntilFinished];
     

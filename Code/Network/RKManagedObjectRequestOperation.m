@@ -889,7 +889,8 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[super copyWithZone:zone];
+    RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:self.HTTPRequestOperation responseDescriptors:self.responseDescriptors];
+//    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[super copyWithZone:zone]; // FIXME: PTC 20150625
     operation.managedObjectContext = self.managedObjectContext;
     operation.managedObjectCache = self.managedObjectCache;
     operation.fetchRequestBlocks = self.fetchRequestBlocks;
