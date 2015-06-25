@@ -67,7 +67,7 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
  @see `RKMIMETypeSerialization`
  @see `RKManagedObjectRequestOperation`
  */
-@interface RKObjectRequestOperation : NSOperation <RKMapperOperationDelegate> {
+@interface RKObjectRequestOperation : NSOperation <NSCopying, RKMapperOperationDelegate> {
   @protected
     RKMappingResult *_mappingResult;
 }

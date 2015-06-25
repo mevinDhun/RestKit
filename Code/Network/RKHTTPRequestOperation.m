@@ -214,4 +214,11 @@ const NSMutableSet *acceptableContentTypes;
     };
 }
 
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    return [(RKHTTPRequestOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request HTTPClient:self.HTTPClient];
+}
+
 @end

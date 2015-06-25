@@ -553,6 +553,20 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     // Default implementation does nothing
 }
 
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    RKObjectRequestOperation *operation = [(RKObjectRequestOperation *)[[self class] allocWithZone:zone] initWithHTTPRequestOperation:[self.HTTPRequestOperation copyWithZone:zone] responseDescriptors:self.responseDescriptors];
+    operation.targetObject = self.targetObject;
+    operation.mappingMetadata = self.mappingMetadata;
+    operation.successCallbackQueue = self.successCallbackQueue;
+    operation.failureCallbackQueue = self.failureCallbackQueue;
+    operation.willMapDeserializedResponseBlock = self.willMapDeserializedResponseBlock;
+    [operation setCompletionBlockWithSuccess:self.successBlock failure:self.failureBlock];
+
+    return operation;
+}
+
 #pragma mark - NSOperation
 
 - (BOOL)isConcurrent
@@ -584,33 +598,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 {
     [super cancel];
     [self.stateMachine cancel];
-}
-
-@end
-
-#pragma mark - Fix for leak in iOS 5/6 "- [NSCachedURLResponse data]" message
-
-@implementation NSCachedURLResponse (RKLeakFix)
-
-- (NSData *)rkData
-{
-    @synchronized(self) {
-        NSData *result;
-        CFIndex count;
-        
-        @autoreleasepool {
-            result = [self data];
-            count = CFGetRetainCount((__bridge CFTypeRef)result);
-        }
-        
-        if (CFGetRetainCount((__bridge CFTypeRef)result) == count) {
-#ifndef __clang_analyzer__
-            CFRelease((__bridge CFTypeRef)result); // Leak detected, manually release
-#endif
-        }
-        
-        return result;
-    }
 }
 
 @end
