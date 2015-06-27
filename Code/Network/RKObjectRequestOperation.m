@@ -248,18 +248,6 @@ static void RKDecrementNetworkAcitivityIndicator()
     #endif
 }
 
-static NSIndexSet *RKAcceptableStatusCodesFromResponseDescriptors(NSArray *responseDescriptors)
-{
-    // If there are no response descriptors or any descriptor matches any status code (expressed by `statusCodes` == `nil`) then we want to accept anything
-    if ([responseDescriptors count] == 0 || [[responseDescriptors valueForKey:@"statusCodes"] containsObject:[NSNull null]]) return nil;
-    
-    NSMutableIndexSet *acceptableStatusCodes = [NSMutableIndexSet indexSet];
-    [responseDescriptors enumerateObjectsUsingBlock:^(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
-        [acceptableStatusCodes addIndexes:responseDescriptor.statusCodes];
-    }];
-    return acceptableStatusCodes;
-}
-
 static NSString *RKStringForStateOfObjectRequestOperation(RKObjectRequestOperation *operation)
 {
     if ([operation isExecuting]) {
@@ -350,10 +338,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     if (self) {
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
-        self.HTTPRequestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
-        self.HTTPRequestOperation.acceptableStatusCodes = RKAcceptableStatusCodesFromResponseDescriptors(responseDescriptors);
-        self.HTTPRequestOperation.successCallbackQueue = [[self class] dispatchQueue];
-        self.HTTPRequestOperation.failureCallbackQueue = [[self class] dispatchQueue];
         
         __weak __typeof(self)weakSelf = self;
         self.stateMachine = [[RKOperationStateMachine alloc] initWithOperation:self dispatchQueue:[[self class] dispatchQueue]];
@@ -614,33 +598,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 {
     [super cancel];
     [self.stateMachine cancel];
-}
-
-@end
-
-#pragma mark - Fix for leak in iOS 5/6 "- [NSCachedURLResponse data]" message
-
-@implementation NSCachedURLResponse (RKLeakFix)
-
-- (NSData *)rkData
-{
-    @synchronized(self) {
-        NSData *result;
-        CFIndex count;
-        
-        @autoreleasepool {
-            result = [self data];
-            count = CFGetRetainCount((__bridge CFTypeRef)result);
-        }
-        
-        if (CFGetRetainCount((__bridge CFTypeRef)result) == count) {
-#ifndef __clang_analyzer__
-            CFRelease((__bridge CFTypeRef)result); // Leak detected, manually release
-#endif
-        }
-        
-        return result;
-    }
 }
 
 @end

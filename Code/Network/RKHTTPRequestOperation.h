@@ -25,13 +25,13 @@
 @protocol RKHTTPResponseSerialization;
 
 /**
- The `RKHTTPRequestOperation` class is a subclass of `AFHTTPRequestOperation` for HTTP or HTTPS requests made by RestKit. It provides per-instance configuration of the acceptable status codes and content types and integrates with the `RKLog` system to provide detailed requested and response logging. Instances of `RKHTTPRequest` are created by `RKObjectRequestOperation` and its subclasses to HTTP requests that will be object mapped. When used to make standalone HTTP requests, `RKHTTPRequestOperation` instance behave identically to `AFHTTPRequestOperation` with the exception of emitting logging information.
+ The `RKHTTPRequestOperation` class is a subclass of `AFHTTPRequestOperation` for HTTP or HTTPS requests made by RestKit. It provides per-instance configuration of the acceptable status codes and content types and integrates with the `RKLog` system to provide detailed requested and response logging. Instances of `RKHTTPRequest` are created by `RKObjectRequestOperation` and its subclasses to HTTP requests that will be object mapped. 
  
  ## Determining Request Processability
  
- The `RKHTTPRequestOperation` class diverges from the behavior of `AFHTTPRequestOperation` in the implementation of `canProcessRequest`, which is used to determine if a request can be processed. Because `RKHTTPRequestOperation` handles Content Type and Status Code acceptability at the instance rather than the class level, it by default returns `YES` when sent a `canProcessRequest:` method. Subclasses are encouraged to implement more specific logic if constraining the type of requests handled is desired.
+ The `RKHTTPRequestOperation` implements `canProcessRequest`, which is used to determine if a request can be processed. Because `RKHTTPRequestOperation` handles Content Type and Status Code acceptability at the instance rather than the class level, it by default returns `YES` when sent a `canProcessRequest:` method. Subclasses are encouraged to implement more specific logic if constraining the type of requests handled is desired.
  */
-@interface RKHTTPRequestOperation : NSOperation <NSSecureCoding, NSCopying>
+@interface RKHTTPRequestOperation : NSOperation <NSCopying>
 
 @property (readonly, nonatomic) id<RKHTTPClient> HTTPClient;
 
@@ -60,53 +60,9 @@
 @property (readonly, nonatomic, strong) NSString *responseString;
 
 /**
- The URL credential
- **/
-@property (nonatomic, strong) NSURLCredential *credential;
-
-/**
- Whether each `RKHTTPRequestOperation` created by `HTTPRequestOperationWithRequest:success:failure:` should accept an invalid SSL certificate.
- */
-@property (nonatomic, assign) BOOL allowsInvalidSSLCertificate;
-
-/**
- Default SSL pinning mode for each `RKHTTPRequestOperation` created by `HTTPRequestOperationWithRequest:success:failure:`.
- */
-@property (nonatomic, assign) RKSSLPinningMode SSLPinningMode;
-
-/**
  The error, if any, that occurred in the lifecycle of the request.
  */
 @property (readonly, nonatomic, strong) NSError *error;
-
-///------------------------------------------------------------
-/// @name Configuring Acceptable Status Codes and Content Types
-///------------------------------------------------------------
-
-/**
- The set of status codes which the operation considers successful.
- 
- When `nil`, the acceptability of status codes is deferred to the superclass implementation.
- 
- **Default**: `nil`
- */
-@property (nonatomic, strong) NSIndexSet *acceptableStatusCodes;
-
-/**
- The set of content types which the operation considers successful.
- 
- The set may contain `NSString` or `NSRegularExpression` objects. When `nil`, the acceptability of content types is deferred to the superclass implementation.
- 
- **Default**: `nil`
- */
-@property (nonatomic, strong) NSSet *acceptableContentTypes;
-
-/**
- Responses sent from the server in data tasks created with `dataTaskWithRequest:success:failure:` and run using the `GET` / `POST` / et al. convenience methods are automatically validated and serialized by the response serializer. By default, this property is set to an AFHTTPResponse serializer, which uses the raw data as its response object. The serializer validates the status code to be in the `2XX` range, denoting success. If the response serializer generates an error in `-responseObjectForResponse:data:error:`, the `failure` callback of the session task or request operation will be executed; otherwise, the `success` callback will be executed.
- 
- @warning `responseSerializer` must not be `nil`. Setting a response serializer will clear out any cached value
- */
-@property (nonatomic, strong) id <RKHTTPResponseSerialization> responseSerializer;
 
 /**
  An object constructed by the `responseSerializer` from the response and response data. Returns `nil` unless the operation `isFinished`, has a `response`, and has `responseData` with non-zero content length. If an error occurs during serialization, `nil` will be returned, and the `error` property will be populated with the serialization error.
@@ -151,37 +107,6 @@
  */
 - (void)resume;
 
-///------------------------------------------------------------
-/// @name Managing Acceptable HTTP Status Codes & Content Types
-///------------------------------------------------------------
-
-/**
- Returns an `NSIndexSet` object containing the ranges of acceptable HTTP status codes. When non-`nil`, the operation will set the `error` property to an error in `AFErrorDomain`. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
- 
- By default, this is the range 200 to 299, inclusive.
- */
-+ (NSIndexSet *)acceptableStatusCodes;
-
-/**
- Adds status codes to the set of acceptable HTTP status codes returned by `+acceptableStatusCodes` in subsequent calls by this class and its descendants.
- 
- @param statusCodes The status codes to be added to the set of acceptable HTTP status codes
- */
-+ (void)addAcceptableStatusCodes:(NSIndexSet *)statusCodes;
-
-/**
- Returns an `NSSet` object containing the acceptable MIME types. When non-`nil`, the operation will set the `error` property to an error in `AFErrorDomain`. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17
- 
- By default, this is `nil`.
- */
-+ (NSSet *)acceptableContentTypes;
-
-/**
- Adds content types to the set of acceptable MIME types returned by `+acceptableContentTypes` in subsequent calls by this class and its descendants.
- 
- @param contentTypes The content types to be added to the set of acceptable MIME types
- */
-+ (void)addAcceptableContentTypes:(NSSet *)contentTypes;
 
 ///-----------------------------------------------------
 /// @name Determining Whether A Request Can Be Processed
@@ -193,20 +118,6 @@
  @param urlRequest The request that is determined to be supported or not supported for this class.
  */
 + (BOOL)canProcessRequest:(NSURLRequest *)urlRequest;
-
-/**
- The callback dispatch queue on success. If `NULL` (default), the main queue is used.
- 
- The queue is retained while this operation is living
- */
-@property (nonatomic, assign) dispatch_queue_t successCallbackQueue;
-
-/**
- The callback dispatch queue on failure. If `NULL` (default), the main queue is used.
- 
- The queue is retained while this operation is living
- */
-@property (nonatomic, assign) dispatch_queue_t failureCallbackQueue;
 
 /**
  Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the request on completion. If `error` returns a value, which can be caused by an unacceptable status code or content type, then `failure` is executed. Otherwise, `success` is executed.
