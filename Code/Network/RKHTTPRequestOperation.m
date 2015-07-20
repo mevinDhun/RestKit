@@ -37,6 +37,9 @@ extern NSString * const RKErrorDomain;
 
 static NSString * const kRKNetworkingLockName = @"com.restkit.networking.operation.lock";
 
+NSString *const RKHTTPRequestOperationDidStartNotification = @"RKHTTPRequestOperationDidStartNotification";
+NSString *const RKHTTPRequestOperationDidFinishNotification = @"RKHTTPRequestOperationDidFinishNotification";
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
@@ -102,7 +105,12 @@ const NSMutableSet *acceptableContentTypes;
     [self.lock lock];
     
     if ([self isExecuting]) {
-        //Pause
+        // Pause
+        // Cancel the connection on the thread it runs on to prevent race conditions
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidFinishNotification object:self];
+        });
     }
     
     self.state = RKOperationPausedState;
@@ -152,12 +160,16 @@ const NSMutableSet *acceptableContentTypes;
         [self willChangeValueForKey:@"isExecuting"];
         _isExecuting = YES;
         [self didChangeValueForKey:@"isExecuting"];
-
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidStartNotification object:self];
+        });
+        
         [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
             
             self.responseData = responseData;
             self.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            self.responseObject = responseObject;            
+            self.responseObject = responseObject;
             self.response = (NSHTTPURLResponse*) response;
             self.error = error;
             [self finish];
@@ -177,6 +189,10 @@ const NSMutableSet *acceptableContentTypes;
     [self willChangeValueForKey:@"isFinished"];
     _isFinished = YES;
     [self didChangeValueForKey:@"isFinished"];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidFinishNotification object:self];
+    });
 }
 
 - (void)cancel {
