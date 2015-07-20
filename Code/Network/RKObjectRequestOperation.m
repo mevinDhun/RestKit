@@ -104,11 +104,11 @@ static NSString *RKLogTruncateString(NSString *string)
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(HTTPOperationDidStart:)
-                                                     name:RKObjectRequestOperationDidStartNotification
+                                                     name:RKHTTPRequestOperationDidStartNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(HTTPOperationDidFinish:)
-                                                     name:RKObjectRequestOperationDidFinishNotification
+                                                     name:RKHTTPRequestOperationDidFinishNotification
                                                    object:nil];
     }
     
@@ -230,6 +230,8 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
 
 NSString *const RKObjectRequestOperationDidStartNotification = @"RKObjectRequestOperationDidStartNotification";
 NSString *const RKObjectRequestOperationDidFinishNotification = @"RKObjectRequestOperationDidFinishNotification";
+NSString *const RKHTTPRequestOperationDidStartNotification = @"RKHTTPRequestOperationDidStartNotification";
+NSString *const RKHTTPRequestOperationDidFinishNotification = @"RKHTTPRequestOperationDidFinishNotification";
 NSString *const RKResponseHasBeenMappedCacheUserInfoKey = @"RKResponseHasBeenMapped";
 NSString *const RKObjectRequestOperationMappingDidStartUserInfoKey = @"mappingStartedAt";
 NSString *const RKObjectRequestOperationMappingDidFinishUserInfoKey = @"mappingFinishedAt";
@@ -343,6 +345,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         self.stateMachine = [[RKOperationStateMachine alloc] initWithOperation:self dispatchQueue:[[self class] dispatchQueue]];
         [self.stateMachine setExecutionBlock:^{
             [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidStartNotification object:weakSelf];
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidStartNotification object:weakSelf.HTTPRequestOperation];
             RKIncrementNetworkActivityIndicator();
             if (weakSelf.isCancelled) {
                 [weakSelf.stateMachine finish];
@@ -353,6 +356,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         [self.stateMachine setFinalizationBlock:^{
             [weakSelf willFinish];
             RKDecrementNetworkAcitivityIndicator();
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidFinishNotification object:weakSelf.HTTPRequestOperation];
             [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate ?: [NSNull null], RKObjectRequestOperationMappingDidFinishUserInfoKey: weakSelf.mappingDidFinishDate ?: [NSNull null] }];
         }];
         [self.stateMachine setCancellationBlock:^{
