@@ -132,7 +132,7 @@
  @param request A NSURLRequest object that represents the request being made
  @param completionHandler A callback block on completion of the request. Block parameters represent the unserialized response object, the NSURLResponse and any associated error
  */
-- (id)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler;
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler;
 
 @end
 

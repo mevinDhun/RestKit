@@ -58,10 +58,10 @@ const NSMutableSet *acceptableContentTypes;
 @property (readwrite, nonatomic, strong) id responseObject;
 @property (readwrite, nonatomic, strong) NSError *responseSerializationError;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
-@property (nonatomic, strong) id operation;
+@property (readwrite, nonatomic, strong) NSURLSessionDataTask *requestTask;
+@property (nonatomic, readwrite) BOOL isFinished;
 @property (nonatomic) BOOL supportsSession;
 @property (nonatomic, readwrite) BOOL isExecuting;
-@property (nonatomic, readwrite) BOOL isFinished;
 
 @end
 
@@ -153,7 +153,7 @@ const NSMutableSet *acceptableContentTypes;
         _isExecuting = YES;
         [self didChangeValueForKey:@"isExecuting"];
 
-        [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
+        self.requestTask = [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
             
             self.responseData = responseData;
             self.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
@@ -184,11 +184,12 @@ const NSMutableSet *acceptableContentTypes;
     if (![self isFinished] && ![self isCancelled]) {
         [self willChangeValueForKey:@"isCancelled"];
         
+        if(self.requestTask.state == NSURLSessionTaskStateRunning){
+            [self.requestTask cancel];
+        }
+        
         [super cancel];
         [self didChangeValueForKey:@"isCancelled"];
-        
-        // Cancel the connection on the thread it runs on to prevent race conditions
-        
     }
     [self.lock unlock];
 }
