@@ -106,11 +106,6 @@ const NSMutableSet *acceptableContentTypes;
     
     if ([self isExecuting]) {
         // Pause
-        // Cancel the connection on the thread it runs on to prevent race conditions
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidFinishNotification object:self];
-        });
     }
     
     self.state = RKOperationPausedState;
