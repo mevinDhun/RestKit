@@ -163,7 +163,7 @@ defaultHeaders = _defaultHeaders;
     NSError *error;
     
     NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:method
-                                                                                URLString:[self URLStringByAppendingPath: path]
+                                                                                URLString:[[self URLStringByAppendingPath: path] absoluteString]
                                                                                parameters:parameters
                                                                 constructingBodyWithBlock:block
                                                                                     error:&error];
