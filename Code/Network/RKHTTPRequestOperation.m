@@ -24,13 +24,6 @@
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
 
-typedef enum {
-    RKOperationPausedState      = -1,
-    RKOperationReadyState       = 1,
-    RKOperationExecutingState   = 2,
-    RKOperationFinishedState    = 3,
-} _RKOperationState;
-
 typedef signed short RKOperationState;
 
 extern NSString * const RKErrorDomain;
@@ -47,7 +40,7 @@ const NSMutableIndexSet *acceptableStatusCodes;
 const NSMutableSet *acceptableContentTypes;
 
 @interface RKHTTPRequestOperation ()
-@property (readwrite, nonatomic, assign) RKOperationState state;
+
 @property (readwrite, nonatomic, strong) NSError *rkHTTPError;
 @property (readwrite, nonatomic, strong) id<RKHTTPClient> HTTPClient;
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
@@ -58,10 +51,7 @@ const NSMutableSet *acceptableContentTypes;
 @property (readwrite, nonatomic, strong) id responseObject;
 @property (readwrite, nonatomic, strong) NSError *responseSerializationError;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
-@property (nonatomic, strong) id operation;
-@property (nonatomic) BOOL supportsSession;
-@property (nonatomic, readwrite) BOOL isExecuting;
-@property (nonatomic, readwrite) BOOL isFinished;
+@property (readwrite, nonatomic, strong) NSURLSessionTask *requestTask;
 
 @end
 
@@ -84,8 +74,6 @@ const NSMutableSet *acceptableContentTypes;
     self.request = urlRequest;
     self.HTTPClient = HTTPClient;
     
-    self.state = RKOperationReadyState;
-    
     return self;
 }
 
@@ -94,66 +82,60 @@ const NSMutableSet *acceptableContentTypes;
     return YES;
 }
 
-- (void)pause {
-    if ([self isPaused] || [self isFinished] || [self isCancelled]) {
-        return;
-    }
-    
-    [self.lock lock];
-    
-    if ([self isExecuting]) {
-        //Pause
-    }
-    
-    self.state = RKOperationPausedState;
-    
-    [self.lock unlock];
-}
-
-- (BOOL)isPaused {
-    return self.state == RKOperationPausedState;
-}
-
-- (void)resume {
-    if (![self isPaused]) {
-        return;
-    }
-    
-    [self.lock lock];
-    self.state = RKOperationReadyState;
-    
-    [self start];
-    [self.lock unlock];
-}
-
 #pragma mark - NSOperation
 
 - (BOOL)isReady {
-    return self.state == RKOperationReadyState && [super isReady];
+    
+    return  ![self isExecuting] &&
+            ![self isFinished] &&
+            ![self isCancelled] &&
+            [super isReady];
+}
+
+- (BOOL)isPaused {
+    return self.requestTask.state == NSURLSessionTaskStateSuspended;
 }
 
 - (BOOL)isExecuting {
-    return self.state == RKOperationExecutingState;
+    return self.requestTask.state == NSURLSessionTaskStateRunning;
 }
 
 - (BOOL)isFinished {
-    return self.state == RKOperationFinishedState;
+    return self.requestTask.state == NSURLSessionTaskStateCompleted;
+}
+
+- (BOOL)isCancelled {
+    return [super isCancelled] || [self isFinished];
 }
 
 - (BOOL)isConcurrent {
     return YES;
 }
 
+- (void)setIsExecuting:(BOOL)isExecuting {
+    [self willChangeValueForKey:@"isExecuting"];
+    [self didChangeValueForKey:@"isExecuting"];
+}
+
+- (void)setIsFinished:(BOOL)isFinished {
+    [self willChangeValueForKey:@"isFinished"];
+    [self didChangeValueForKey:@"isFinished"];
+}
+
+- (void)setIsCancelled:(BOOL)isFinished {
+    [self willChangeValueForKey:@"isCancelled"];
+    [self didChangeValueForKey:@"isCancelled"];
+}
+
 - (void)start {
+    
     [self.lock lock];
     if ([self isReady]) {
-        self.state = RKOperationExecutingState;
         
-        [self willChangeValueForKey:@"isExecuting"];
-        _isExecuting = YES;
-        [self didChangeValueForKey:@"isExecuting"];
+        // Notify observers/queue
+        self.isExecuting = YES;
 
-        [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
+        self.requestTask = [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
             
             self.responseData = responseData;
             self.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
@@ -166,29 +148,54 @@ const NSMutableSet *acceptableContentTypes;
     [self.lock unlock];
 }
 
+- (void)pause {
+    
+    if ([self isPaused] || [self isFinished] || [self isCancelled]) {
+        return;
+    }
+    
+    [self.lock lock];
+    
+    [self.requestTask suspend];
+    
+    self.isExecuting = NO;
+    
+    [self.lock unlock];
+}
+
+
+- (void)resume {
+    
+    if (![self isPaused]) {
+        return;
+    }
+    
+    [self.lock lock];
+    
+    [self.requestTask resume];
+    
+    self.isExecuting = YES;
+
+    [self.lock unlock];
+}
+
 
 - (void)finish {
-    self.state = RKOperationFinishedState;
-    
-    [self willChangeValueForKey:@"isExecuting"];
-    _isExecuting = NO;
-    [self didChangeValueForKey:@"isExecuting"];
-    
-    [self willChangeValueForKey:@"isFinished"];
-    _isFinished = YES;
-    [self didChangeValueForKey:@"isFinished"];
+
+    // Notify observers/queue
+    self.isExecuting = NO;
+    self.isFinished = YES;
 }
 
 - (void)cancel {
+    
     [self.lock lock];
     if (![self isFinished] && ![self isCancelled]) {
-        [self willChangeValueForKey:@"isCancelled"];
         
+        [self.requestTask cancel];
+        
+        self.isCancelled = YES;
         [super cancel];
-        [self didChangeValueForKey:@"isCancelled"];
-        
-        // Cancel the connection on the thread it runs on to prevent race conditions
-        
     }
     [self.lock unlock];
 }
