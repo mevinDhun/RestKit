@@ -93,15 +93,15 @@ const NSMutableSet *acceptableContentTypes;
 }
 
 - (BOOL)isPaused {
-    return self.requestTask.state == NSURLSessionTaskStateSuspended;
+    return self.requestTask && self.requestTask.state == NSURLSessionTaskStateSuspended;
 }
 
 - (BOOL)isExecuting {
-    return self.requestTask.state == NSURLSessionTaskStateRunning;
+    return self.requestTask && self.requestTask.state == NSURLSessionTaskStateRunning;
 }
 
 - (BOOL)isFinished {
-    return self.requestTask.state == NSURLSessionTaskStateCompleted;
+    return self.requestTask && self.requestTask.state == NSURLSessionTaskStateCompleted;
 }
 
 - (BOOL)isCancelled {
