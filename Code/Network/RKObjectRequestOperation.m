@@ -104,11 +104,11 @@ static NSString *RKLogTruncateString(NSString *string)
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(HTTPOperationDidStart:)
-                                                     name:RKObjectRequestOperationDidStartNotification
+                                                     name:RKHTTPRequestOperationDidStartNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(HTTPOperationDidFinish:)
-                                                     name:RKObjectRequestOperationDidFinishNotification
+                                                     name:RKHTTPRequestOperationDidFinishNotification
                                                    object:nil];
     }
     

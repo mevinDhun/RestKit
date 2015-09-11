@@ -130,4 +130,20 @@
 - (void)setCompletionBlockWithSuccess:(void (^)(RKHTTPRequestOperation *operation, id responseObject))success
                               failure:(void (^)(RKHTTPRequestOperation *operation, NSError *error))failure;
 
+
+
+///--------------------
+/// @name Notifications
+///--------------------
+
+/**
+ Posted when an HTTP request operation begin executing.
+ */
+extern NSString *const RKHTTPRequestOperationDidStartNotification;
+
+/**
+ Posted when an HTTP request operation finishes.
+ */
+extern NSString *const RKHTTPRequestOperationDidFinishNotification;
+
 @end

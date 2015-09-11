@@ -30,6 +30,9 @@ extern NSString * const RKErrorDomain;
 
 static NSString * const kRKNetworkingLockName = @"com.restkit.networking.operation.lock";
 
+NSString *const RKHTTPRequestOperationDidStartNotification = @"RKHTTPRequestOperationDidStartNotification";
+NSString *const RKHTTPRequestOperationDidFinishNotification = @"RKHTTPRequestOperationDidFinishNotification";
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
@@ -135,6 +138,10 @@ const NSMutableSet *acceptableContentTypes;
         // Notify observers/queue
         self.isExecuting = YES;
 
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidStartNotification object:self];
+        });
+        
         self.requestTask = [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
             
             self.responseData = responseData;
@@ -185,6 +192,10 @@ const NSMutableSet *acceptableContentTypes;
     // Notify observers/queue
     self.isExecuting = NO;
     self.isFinished = YES;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidFinishNotification object:self];
+    });
 }
 
 - (void)cancel {
