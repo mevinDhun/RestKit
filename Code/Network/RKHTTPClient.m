@@ -202,7 +202,7 @@ defaultHeaders = _defaultHeaders;
         id responseObject;
         if(self.responseSerializerClass){
             responseObject = [self.responseSerializerClass objectFromData:data error:&error];
-        }else{
+        }else if (response.MIMEType) {
             responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
         }
         
