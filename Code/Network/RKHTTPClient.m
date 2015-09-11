@@ -105,12 +105,13 @@ defaultHeaders = _defaultHeaders;
                                 parameters:(NSDictionary *)parameters{
     
     NSError *error;
-    NSString *URLString = [self URLStringByAppendingPath:path];
+    NSURL *url = [self URLStringByAppendingPath:path];
+    NSString *URLString = [url absoluteString];
     
     //Construct an NSMutableURLRequest
     NSMutableURLRequest *request = [NSMutableURLRequest new];
     request.HTTPMethod = method;
-    request.URL = [NSURL URLWithString:URLString];
+    request.URL = url;
     
     //Set default HTTP headers in the request
     [self.defaultHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id values, BOOL * __unused stop) {
@@ -135,7 +136,7 @@ defaultHeaders = _defaultHeaders;
     //Are we parameterizing the querystring or the HTTP Body
     if([self.HTTPMethodsEncodingParametersInURI containsObject:[method uppercaseString]]){
         
-        BOOL hasQueryString     = [URLString containsString:@"?"];
+        BOOL hasQueryString     = url.query ? YES : NO;
         NSData *queryStringData = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
         NSString *queryString   = [[NSString alloc] initWithData:queryStringData encoding:NSUTF8StringEncoding];
         
@@ -162,7 +163,7 @@ defaultHeaders = _defaultHeaders;
     NSError *error;
     
     NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:method
-                                                                                URLString:[self URLStringByAppendingPath: path]
+                                                                                URLString:[[self URLStringByAppendingPath: path] absoluteString]
                                                                                parameters:parameters
                                                                 constructingBodyWithBlock:block
                                                                                     error:&error];
@@ -175,12 +176,12 @@ defaultHeaders = _defaultHeaders;
     
 }
 
--(NSString*)URLStringByAppendingPath:(NSString*)path{
+-(NSURL*)URLStringByAppendingPath:(NSString*)path{
     
     NSURLComponents *components = [NSURLComponents componentsWithURL:self.baseURL resolvingAgainstBaseURL:NO];
     components.path = [components.path stringByAppendingString:path];
     
-    return [components string];
+    return [components URL];
 }
 
 - (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler{
