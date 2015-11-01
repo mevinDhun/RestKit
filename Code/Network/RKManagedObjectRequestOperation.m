@@ -895,6 +895,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     operation.fetchRequestBlocks = self.fetchRequestBlocks;
     operation.deletesOrphanedObjects = self.deletesOrphanedObjects;
     operation.savesToPersistentStore = self.savesToPersistentStore;
+    operation.willSaveMappingContextBlock = self.willSaveMappingContextBlock;
     
     return operation;
 }

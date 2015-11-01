@@ -64,6 +64,28 @@
  */
 @property (readonly, nonatomic, strong) NSError *error;
 
+///------------------------------------------------------------
+/// @name Configuring Acceptable Status Codes and Content Types
+///------------------------------------------------------------
+
+/**
+ The set of status codes which the operation considers successful.
+ 
+ When `nil`, all status codes are acceptable.
+ 
+ **Default**: `nil`
+ */
+@property (nonatomic, strong) NSIndexSet *acceptableStatusCodes;
+
+/**
+ The set of content types which the operation considers successful.
+ 
+ The set may contain `NSString` or `NSRegularExpression` objects. When `nil`, all content types are acceptable.
+ 
+ **Default**: `nil`
+ */
+@property (nonatomic, strong) NSSet *acceptableContentTypes;
+
 /**
  An object constructed by the `responseSerializer` from the response and response data. Returns `nil` unless the operation `isFinished`, has a `response`, and has `responseData` with non-zero content length. If an error occurs during serialization, `nil` will be returned, and the `error` property will be populated with the serialization error.
  */
@@ -118,6 +140,20 @@
  @param urlRequest The request that is determined to be supported or not supported for this class.
  */
 + (BOOL)canProcessRequest:(NSURLRequest *)urlRequest;
+
+/**
+ The callback dispatch queue on success. If `NULL` (default), the main queue is used.
+ 
+ The queue is retained while this operation is living
+ */
+@property (nonatomic, assign) dispatch_queue_t successCallbackQueue;
+
+/**
+ The callback dispatch queue on failure. If `NULL` (default), the main queue is used.
+ 
+ The queue is retained while this operation is living
+ */
+@property (nonatomic, assign) dispatch_queue_t failureCallbackQueue;
 
 /**
  Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the request on completion. If `error` returns a value, which can be caused by an unacceptable status code or content type, then `failure` is executed. Otherwise, `success` is executed.

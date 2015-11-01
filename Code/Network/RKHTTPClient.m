@@ -12,6 +12,9 @@
 #import "RKHTTPJSONResponseSerializer.h"
 #import "RKHTTPPropertyListResponseSerializer.h"
 #import "RKMIMETypeSerialization.h"
+#import "RKLog.h"
+#import "RKErrors.h"
+#import "RKHTTPUtilities.h"
 
 @interface RKHTTPClient ()
 
@@ -184,7 +187,10 @@ defaultHeaders = _defaultHeaders;
     return [components URL];
 }
 
-- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler{
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request
+                  acceptableStatusCodes:(NSIndexSet *)acceptableStatusCodes
+                 acceptableContentTypes:(NSSet *)acceptableContentTypes
+                      completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler{
     
     NSURLSession *session = [NSURLSession sharedSession];
     
@@ -199,11 +205,46 @@ defaultHeaders = _defaultHeaders;
             return;
         }
         
+        if(acceptableStatusCodes && [response isKindOfClass:[NSHTTPURLResponse class]] && ![acceptableStatusCodes containsIndex:((NSHTTPURLResponse *)response).statusCode]) {
+            NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
+            
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected status code in (%@), got %ld", RKDescriptionStringFromIndexSet(acceptableStatusCodes), (long)code] };
+            NSError *e = [NSError errorWithDomain:RKErrorDomain code:code userInfo:userInfo];
+            
+            completionHandler(nil, nil, response, e);
+            return;
+        }
+        
+        if(acceptableContentTypes && RKRequestMethodFromString(request.HTTPMethod) != RKRequestMethodHEAD && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+            NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
+            
+            if(![RKStatusCodesOfResponsesWithOptionalBodies() containsIndex:code]) {
+                NSString *contentType = [[(NSHTTPURLResponse *)response allHeaderFields] objectForKey:@"Content-Type"];
+                
+                if(contentType && !RKMIMETypeInSet(contentType, acceptableContentTypes)) {
+                    NSRange endRange = [contentType rangeOfString:@";"];
+                    
+                    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected content type %@, got %@", acceptableContentTypes, endRange.location == NSNotFound ? contentType : [contentType substringToIndex:endRange.location]] };
+                    NSError *e = [NSError errorWithDomain:RKErrorDomain code:code userInfo:userInfo];
+                    
+                    completionHandler(nil, nil, response, e);
+                    return;
+                }
+            }
+        }
+        
         id responseObject;
         if(self.responseSerializerClass){
             responseObject = [self.responseSerializerClass objectFromData:data error:&error];
         }else if (response.MIMEType) {
             responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
+        }
+        
+        if(!responseObject && data.length) {
+            RKLogWarning(@"Unable to serialise data with error %@", error);
+            responseObject = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            
+            if(responseObject) error = nil;
         }
         
         completionHandler(responseObject, data, response, error);

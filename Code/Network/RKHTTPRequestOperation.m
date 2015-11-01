@@ -142,7 +142,10 @@ const NSMutableSet *acceptableContentTypes;
             [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidStartNotification object:self];
         });
         
-        self.requestTask = [self.HTTPClient performRequest:self.request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
+        self.requestTask = [self.HTTPClient performRequest:self.request
+                                     acceptableStatusCodes:self.acceptableStatusCodes
+                                    acceptableContentTypes:self.acceptableContentTypes
+                                         completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
             
             self.responseData = responseData;
             self.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
@@ -218,13 +221,13 @@ const NSMutableSet *acceptableContentTypes;
     self.completionBlock = ^{
         if (weakSelf.error) {
             if (failure) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(weakSelf.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
                     failure(weakSelf, weakSelf.error);
                 });
             }
         } else {
             if (success) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(weakSelf.successCallbackQueue ?: dispatch_get_main_queue(), ^{
                     success(weakSelf, weakSelf.responseData);
                 });
             }
@@ -236,7 +239,12 @@ const NSMutableSet *acceptableContentTypes;
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    return [(RKHTTPRequestOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request HTTPClient:self.HTTPClient];
+    RKHTTPRequestOperation *operation = [(RKHTTPRequestOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request HTTPClient:self.HTTPClient];
+    
+    operation.successCallbackQueue = self.successCallbackQueue;
+    operation.failureCallbackQueue = self.failureCallbackQueue;
+    
+    return operation;
 }
 
 @end

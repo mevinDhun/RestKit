@@ -339,6 +339,9 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
         
+        self.HTTPRequestOperation.successCallbackQueue = [[self class] dispatchQueue];
+        self.HTTPRequestOperation.failureCallbackQueue = [[self class] dispatchQueue];
+        
         __weak __typeof(self)weakSelf = self;
         self.stateMachine = [[RKOperationStateMachine alloc] initWithOperation:self dispatchQueue:[[self class] dispatchQueue]];
         [self.stateMachine setExecutionBlock:^{

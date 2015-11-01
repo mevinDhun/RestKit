@@ -130,9 +130,14 @@
 /**
  Performs and HTTP request using the supplied request object.
  @param request A NSURLRequest object that represents the request being made
+ @param acceptableStatusCodes An index set of success status codes
+ @param acceptableContentTypes An set of success content types
  @param completionHandler A callback block on completion of the request. Block parameters represent the unserialized response object, the NSURLResponse and any associated error
  */
-- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler;
+- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request
+                  acceptableStatusCodes:(NSIndexSet *)acceptableStatusCodes
+                 acceptableContentTypes:(NSSet *)acceptableContentTypes
+                      completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler;
 
 @end
 
@@ -140,7 +145,5 @@
 @interface RKHTTPClient : NSObject <RKHTTPClient>
 
 @property (strong, nonatomic, readonly) NSURLSession *session;
-
-- (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler;
 
 @end
