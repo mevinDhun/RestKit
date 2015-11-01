@@ -428,7 +428,6 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 @property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @property (nonatomic, strong) NSDictionary *mappingInfo;
-@property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @property (nonatomic, readonly) BOOL canSkipMapping;
 @property (nonatomic, assign) BOOL hasMemoizedCanSkipMapping;
 @property (nonatomic, copy) void (^willSaveMappingContextBlock)(NSManagedObjectContext *mappingContext);
@@ -446,7 +445,6 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     if (self) {
         self.savesToPersistentStore = YES;
         self.deletesOrphanedObjects = YES;
-        self.cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:requestOperation.request];
     }
     return self;
 }
@@ -530,10 +528,12 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (BOOL)canSkipMapping
 {
     BOOL (^shouldSkipMapping)(void) = ^{
-        // Is the request cacheable
-        if (!self.cachedResponse) return NO;
-        if (!self.managedObjectCache) return NO;
         NSURLRequest *request = self.HTTPRequestOperation.request;
+        NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+        
+        // Is the request cacheable
+        if (!cachedResponse) return NO;
+        if (!self.managedObjectCache) return NO;
         if (! [[request HTTPMethod] isEqualToString:@"GET"] && ! [[request HTTPMethod] isEqualToString:@"HEAD"]) return NO;
         NSHTTPURLResponse *response = (NSHTTPURLResponse *)self.HTTPRequestOperation.response;
         if (! [RKCacheableStatusCodes() containsIndex:response.statusCode]) return NO;
@@ -546,16 +546,15 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         if (! RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(matchingResponseDescriptors)) return NO;
 
         // Check for a change in the Etag
-        NSString *cachedEtag = [(NSHTTPURLResponse *)[self.cachedResponse response] allHeaderFields][@"ETag"];
+        NSString *cachedEtag = [(NSHTTPURLResponse *)[cachedResponse response] allHeaderFields][@"ETag"];
         NSString *responseEtag = [response allHeaderFields][@"ETag"];
         if (!(cachedEtag && responseEtag && [cachedEtag isEqualToString:responseEtag])) return NO;
         
         // Response data has changed
         NSData *responseData = self.HTTPRequestOperation.responseData;
-        if (! [responseData isEqualToData:[self.cachedResponse data]]) return NO;
+        if (! [responseData isEqualToData:[cachedResponse data]]) return NO;
         
         // Check that we have mapped this response previously
-        NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
         return [(cachedResponse.userInfo)[RKResponseHasBeenMappedCacheUserInfoKey] boolValue];
     };
     

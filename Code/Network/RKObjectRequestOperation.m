@@ -339,6 +339,10 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
         
+        // TODO: set the acceptable status & content from the response descriptors
+        
+        self.successCallbackQueue = [[self class] dispatchQueue];
+        self.failureCallbackQueue = [[self class] dispatchQueue];
         self.HTTPRequestOperation.successCallbackQueue = [[self class] dispatchQueue];
         self.HTTPRequestOperation.failureCallbackQueue = [[self class] dispatchQueue];
         

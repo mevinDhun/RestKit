@@ -160,14 +160,7 @@
 - (void)testInitializationWithBaseURLSetsDefaultAcceptHeaderValueToJSON
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    expect([manager defaultHeaders][@"Accept"]).to.equal(RKMIMETypeJSON);
-}
-
-- (void)testInitializationWithBaseURLSetsRequestSerializationMIMETypeToFormURLEncoded
-{
-    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    expect(manager.HTTPClient.requestSerializerClass).to.equal([RKMIMETypeFormURLEncoded class]);
-    //    expect(manager.requestSerializationMIMEType).to.equal(RKMIMETypeFormURLEncoded);
+    expect([manager defaultHeaders][@"Accept"]).to.equal(@[ RKMIMETypeJSON ]);
 }
 
 - (void)testInitializationWithRKHTTPClientSetsNilAcceptHeaderValue
@@ -175,25 +168,28 @@
     RKHTTPClient *client = [RKHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
     [client setDefaultHeader:@"Accept" value:@"this/that"];
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
-    expect([manager defaultHeaders][@"Accept"]).to.equal(@"this/that");
+    expect([manager defaultHeaders][@"Accept"]).to.equal(@[ @"this/that" ]);
 }
 
 - (void)testDefersToRKHTTPClientParameterEncodingWhenInitializedWithRKHTTPClient
 {
     RKHTTPClient *client = [RKHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    //    client.parameterEncoding = RKJSONParameterEncoding; // FIXME PTC 20150625 parameter encoding not longer appliable - is this test then applicable?
+    client.requestSerializerClass = [RKHTTPJSONRequestSerializer class];
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
-    expect(manager.HTTPClient.requestSerializerClass).to.equal([RKMIMETypeFormURLEncoded class]);
-    //    expect([manager requestSerializationMIMEType]).to.equal(RKMIMETypeJSON);
+    expect(manager.HTTPClient.requestSerializerClass).to.equal([RKHTTPJSONRequestSerializer class]);
 }
 
-- (void)testDefaultsToFormURLEncodingForUnsupportedParameterEncodings
+- (void)testDefaultsToMIMETypeRequestSerialzationOnNoSpecification
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    expect(manager.HTTPClient.requestSerializerClass).to.beNil;
+}
+
+- (void)testDefaultsToMIMETypeRequestSerialzationOnNoSpecificationWhenInitializedWithRKHTTPClient
 {
     RKHTTPClient *client = [RKHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    //    client.parameterEncoding = RKPropertyListParameterEncoding; // FIXME PTC 20150625 parameter encoding not longer appliable - is this test then applicable?
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
-    expect(manager.HTTPClient.requestSerializerClass).to.equal([RKMIMETypeFormURLEncoded class]);
-    //    expect([manager requestSerializationMIMEType]).to.equal(RKMIMETypeFormURLEncoded);
+    expect(manager.HTTPClient.requestSerializerClass).to.beNil;
 }
 
 - (void)testShouldUpdateACoreDataBackedTargetObject
@@ -503,7 +499,7 @@
     expect(request.HTTPMethod).to.equal(@"PATCH");
     expect(request.HTTPBody).notTo.beNil();
     NSString *string = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
-    expect(string).to.equal(@"human[name]&key=value");
+    expect(string).to.equal(@"{\"human\":{\"name\":null},\"key\":\"value\"}");
 }
 
 - (void)testRKHTTPClientCanModifyRequestsBuiltByObjectManager
