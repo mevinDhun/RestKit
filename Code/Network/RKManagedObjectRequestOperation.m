@@ -56,10 +56,10 @@
     NSMutableArray *entityMappingEvents = [NSMutableArray array];
     for (id rootKey in mappingInfo) {
         NSArray *mappingInfoArray = mappingInfo[rootKey];
-        for (RKMappingInfo *mappingInfo in mappingInfoArray) {                        
+        for (RKMappingInfo *mappingInfo in mappingInfoArray) {
             [entityMappingEvents addObjectsFromArray:[self entityMappingEventsWithMappingInfo:mappingInfo rootKey:rootKey keyPath:nil]];
         }
-    }    
+    }
     return entityMappingEvents;
 }
 
@@ -174,8 +174,8 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
 @interface RKRefetchingMappingResult : NSProxy
 
 - (instancetype)initWithMappingResult:(RKMappingResult *)mappingResult
-       managedObjectContext:(NSManagedObjectContext *)managedObjectContext
-                mappingInfo:(NSDictionary *)mappingInfo;
+                 managedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                          mappingInfo:(NSDictionary *)mappingInfo;
 @end
 
 @interface RKRefetchingMappingResult ()
@@ -203,8 +203,8 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
 }
 
 - (instancetype)initWithMappingResult:(RKMappingResult *)mappingResult
-       managedObjectContext:(NSManagedObjectContext *)managedObjectContext
-                mappingInfo:(NSDictionary *)mappingInfo;
+                 managedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                          mappingInfo:(NSDictionary *)mappingInfo;
 {
     self.mappingResult = mappingResult;
     self.managedObjectContext = managedObjectContext;
@@ -375,7 +375,7 @@ static NSSet *RKManagedObjectsFromObjectWithMappingInfo(id object, RKMappingInfo
         for (RKRelationshipMapping *relationshipMapping in [mappingInfo.objectMapping relationshipMappings]) {
             [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(object, relationshipMapping)];
         }
-    } else {    
+    } else {
         for (NSString *destinationKeyPath in mappingInfo.relationshipMappingInfo) {
             id relationshipValue = [object valueForKeyPath:destinationKeyPath];
             NSArray *mappingInfos = (mappingInfo.relationshipMappingInfo)[destinationKeyPath];
@@ -394,7 +394,7 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
 {
     NSMutableSet *managedObjectsInMappingResult = nil;
     NSDictionary *mappingResultDictionary = [mappingResult dictionary];
-
+    
     for (id rootKey in mappingInfo) {
         NSArray *mappingInfoArray = mappingInfo[rootKey];
         id objectsAtRoot = mappingResultDictionary[rootKey];
@@ -409,7 +409,7 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
             }
         }
     };
-
+    
     return managedObjectsInMappingResult;
 }
 
@@ -463,14 +463,14 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (void)setTargetObject:(id)targetObject
 {
     [super setTargetObject:targetObject];
-
+    
     if ([targetObject isKindOfClass:[NSManagedObject class]]) {
         if ([[targetObject objectID] isTemporaryID]) {
             [[targetObject managedObjectContext] performBlockAndWait:^{
                 NSError *error = nil;
                 BOOL success = [[targetObject managedObjectContext] obtainPermanentIDsForObjects:@[ targetObject ] error:&error];
                 if (! success) RKLogWarning(@"Failed to obtain permanent objectID for targetObject: %@ (%ld)", [error localizedDescription], (long) error.code);
-            }];            
+            }];
         }
         self.targetObjectID = [targetObject objectID];
     } else {
@@ -481,7 +481,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     _managedObjectContext = managedObjectContext;
-
+    
     if (managedObjectContext) {
         [managedObjectContext performBlockAndWait:^{
             if ([managedObjectContext hasChanges]) {
@@ -509,7 +509,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         [privateContext setParentContext:managedObjectContext];
         [privateContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-
+        
         self.privateContext = privateContext;
     } else {
         self.privateContext = nil;
@@ -544,7 +544,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
             if ([responseDescriptor matchesResponse:response]) [matchingResponseDescriptors addObject:responseDescriptor];
         }
         if (! RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(matchingResponseDescriptors)) return NO;
-
+        
         // Check for a change in the Etag
         NSString *cachedEtag = [(NSHTTPURLResponse *)[cachedResponse response] allHeaderFields][@"ETag"];
         NSString *responseEtag = [response allHeaderFields][@"ETag"];
@@ -586,7 +586,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         completionBlock(mappingResult, nil);
         return;
     }
-
+    
     self.responseMapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithRequest:self.HTTPRequestOperation.request
                                                                                           response:self.HTTPRequestOperation.response
                                                                                               data:self.HTTPRequestOperation.responseData
@@ -598,37 +598,50 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     self.responseMapperOperation.managedObjectContext = self.privateContext;
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
-    [self.responseMapperOperation setQueuePriority:[self queuePriority]];    
+    [self.responseMapperOperation setQueuePriority:[self queuePriority]];
     __weak __typeof(self)weakSelf = self;
     [self.responseMapperOperation setDidFinishMappingBlock:^(RKMappingResult *mappingResult, NSError *responseMappingError) {
         if ([weakSelf isCancelled]) return completionBlock(mappingResult, responseMappingError);
         
-        BOOL success;
-        NSError *error = nil;
+        __block BOOL success;
+        __block NSError *error = nil;
         
         // Handle any cleanup
         if (weakSelf.targetObjectID
             && NSLocationInRange(weakSelf.HTTPRequestOperation.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
             && [[[weakSelf.HTTPRequestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
-            success = [weakSelf deleteTargetObject:&error];
+            
+            [weakSelf.privateContext performBlockAndWait:^{
+                success = [weakSelf deleteTargetObject:&error];
+            }];
+            
             if (! success || [weakSelf isCancelled]) {
                 return completionBlock(nil, error);
             }
         }
-
-        if (!responseMappingError) {
-            success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
-            if (! success || [weakSelf isCancelled]) {
-                return completionBlock(nil, error);
-            }
         
-            // Persist our mapped objects
-            success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
+        if (!responseMappingError) {
+            [weakSelf.privateContext performBlockAndWait:^{
+                success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
+            }];
+            
             if (! success || [weakSelf isCancelled]) {
                 return completionBlock(nil, error);
             }
             
-            success = [weakSelf saveContext:&error];
+            // Persist our mapped objects
+            [weakSelf.privateContext performBlockAndWait:^{
+                success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
+            }];
+            
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
+            
+            [weakSelf.privateContext performBlockAndWait:^{
+                success = [weakSelf saveContext:&error];
+            }];
+            
             if (! success || [weakSelf isCancelled]) {
                 return completionBlock(nil, error);
             }
@@ -649,7 +662,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (BOOL)deleteTargetObject:(NSError **)error
 {
     __block BOOL _blockSuccess = YES;
-
+    
     if (self.targetObjectID) {
         // 2xx/404/410 DELETE request, proceed with deletion from the MOC
         __block NSError *_blockError = nil;
@@ -666,7 +679,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
             }
         }];
     }
-
+    
     return _blockSuccess;
 }
 
@@ -716,7 +729,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         RKLogDebug(@"Skipping deletion of orphaned objects: disabled as deletesOrphanedObjects=NO");
         return YES;
     }
-
+    
     if (! [[self.HTTPRequestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
         RKLogDebug(@"Skipping deletion of orphaned objects: only performed for GET requests.");
         return YES;
@@ -751,7 +764,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
             }
         }];
     }
-
+    
     return YES;
 }
 
@@ -772,19 +785,19 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
                 success = NO;
             }
         }];
-
+        
         if (! success) {
             if (error) *error = localError;
             return NO;
         }
-
+        
         if (! contextToSave.parentContext && contextToSave.persistentStoreCoordinator == nil) {
             RKLogWarning(@"Reached the end of the chain of nested managed object contexts without encountering a persistent store coordinator. Objects are not fully persisted.");
             return NO;
         }
         contextToSave = contextToSave.parentContext;
     }
-
+    
     return YES;
 }
 
@@ -811,7 +824,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         RKLogError(@"Failed saving managed object context %@ %@: %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  context, localError);
         RKLogCoreDataError(localError);
     }
-
+    
     return success;
 }
 
@@ -839,7 +852,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         // Object was like POST'd in an unsaved state and we wish to persist
         if (isNew) [self saveContext:context error:error];
     }
-
+    
     return YES;
 }
 
@@ -853,7 +866,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         _blockSuccess = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&localError];
     }];
     if (!_blockSuccess && error) *error = localError;
-
+    
     return _blockSuccess;;
 }
 

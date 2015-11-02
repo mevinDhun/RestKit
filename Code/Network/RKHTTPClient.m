@@ -234,17 +234,19 @@ defaultHeaders = _defaultHeaders;
         }
         
         id responseObject;
-        if(self.responseSerializerClass){
-            responseObject = [self.responseSerializerClass objectFromData:data error:&error];
-        }else if (response.MIMEType) {
-            responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
-        }
-        
-        if(!responseObject && data.length) {
-            RKLogWarning(@"Unable to serialise data with error %@", error);
-            responseObject = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if(data.length) {
+            if(self.responseSerializerClass){
+                responseObject = [self.responseSerializerClass objectFromData:data error:&error];
+            }else if (response.MIMEType) {
+                responseObject = [RKMIMETypeSerialization objectFromData:data MIMEType:response.MIMEType error:&error];
+            }
             
-            if(responseObject) error = nil;
+            if(!responseObject) {
+                RKLogWarning(@"Unable to serialise data with error %@", error);
+                responseObject = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                
+                if(responseObject) error = nil;
+            }
         }
         
         completionHandler(responseObject, data, response, error);
