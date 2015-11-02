@@ -194,13 +194,14 @@
 
 - (void)testShouldUpdateACoreDataBackedTargetObject
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
     [operation start];
-    [operation waitUntilFinished];
+    
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     expect(operation.mappingResult).notTo.beNil();
     expect([operation.mappingResult array]).notTo.beEmpty();
@@ -211,7 +212,7 @@
 
 - (void)testShouldNotPersistTemporaryEntityToPersistentStoreOnError
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -219,14 +220,15 @@
     
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
     [operation start];
-    [operation waitUntilFinished];
+    
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     expect([temporaryHuman isNew]).to.equal(YES);
 }
 
 - (void)testThatFailedObjectRequestOperationDoesNotSaveObjectToPersistentStore
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -236,14 +238,15 @@
     
     RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
     [operation start];
-    [operation waitUntilFinished];
+    
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     expect([temporaryHuman isNew]).to.equal(YES);
 }
 
 - (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning200
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @1;
@@ -251,22 +254,23 @@
     [mapping addAttributeMappingsFromArray:@[@"name"]];
     
     // Save it to ensure the object is persisted before we delete it
-    [self.objectManager.managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    [self.objectManager.managedObjectStore.mainQueueManagedObjectContext save:nil];
     
     RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:nil];
     [operation start];
-    [operation waitUntilFinished];
+    
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
-    NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    NSArray *humans = [_objectManager.managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     expect(error).to.beNil();
     expect(humans).to.haveCountOf(0);
 }
 
 - (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning204
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
@@ -274,15 +278,16 @@
     [mapping addAttributeMappingsFromArray:@[@"name"]];
     
     // Save it to ensure the object is persisted before we delete it
-    [self.objectManager.managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    [self.objectManager.managedObjectStore.mainQueueManagedObjectContext save:nil];
     
     RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:nil];
     [operation start];
-    [operation waitUntilFinished];
+    
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
-    NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    NSArray *humans = [_objectManager.managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     expect(error).to.beNil();
     expect(humans).to.haveCountOf(0);
 }
@@ -421,7 +426,7 @@
 
 - (void)testShouldProperlyFireABatchOfOperations
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     
@@ -437,7 +442,8 @@
         completionBlockOperationCount = operations.count;
     }];
     expect(_objectManager.operationQueue).notTo.beNil();
-    [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
+
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         expect(progressCallbackCount).to.equal(3);
@@ -447,7 +453,7 @@
 
 - (void)testShouldProperlyFireABatchOfOperationsFromRoute
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     RKHuman *dan = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     dan.name = @"Dan";
     
@@ -465,7 +471,8 @@
         completionBlockOperationCount = operations.count;
     }];
     expect(_objectManager.operationQueue).notTo.beNil();
-    [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
+    
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         expect(progressCallbackCount).to.equal(3);
@@ -1492,7 +1499,8 @@
 
 - (void)testRoutingMetadataWithAppropriateObjectRequestOperation
 {
-    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
+    
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @(12345);
@@ -1580,14 +1588,17 @@
 
 - (void)testShouldPropagateDeletionsUpToPersistentStore
 {
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext withProperties:nil];
-    temporaryHuman.name = @"My Name";
-    temporaryHuman.railsID = @1;
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping addAttributeMappingsFromArray:@[@"name"]];
-    
-    // Save it to ensure the object is persisted before we delete it
-    [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext save:nil];
+    __block RKHuman *temporaryHuman;
+    [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext performBlockAndWait:^{
+        temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext withProperties:nil];
+        temporaryHuman.name = @"My Name";
+        temporaryHuman.railsID = @1;
+        RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+        [mapping addAttributeMappingsFromArray:@[@"name"]];
+        
+        // Save it to ensure the object is persisted before we delete it
+        [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext save:nil];
+    }];
     
     RKHuman *persistedHuman = (RKHuman *)[[RKTestFactory managedObjectStore].mainQueueManagedObjectContext objectWithID:temporaryHuman.objectID];
     expect(persistedHuman).toNot.beNil();
@@ -1599,11 +1610,13 @@
     [operation start];
     expect([operation isFinished]).will.beTruthy();
     
-    NSError *error = nil;
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
-    NSArray *humans = [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    expect(error).to.beNil();
-    expect(humans).to.haveCountOf(0);
+    [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+        NSArray *humans = [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+        expect(error).to.beNil();
+        expect(humans).to.haveCountOf(0);
+    }];
 }
 
 - (void)testPostingAnObjectAndGettingBackOtherObjectsCanConnectRelationsById

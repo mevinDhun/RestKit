@@ -393,15 +393,15 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         }
         
         // Let the connection operations execute to completion
-#ifdef RKCoreDataIncluded
-        Class managedObjectMappingOperationDataSourceClass = NSClassFromString(@"RKManagedObjectMappingOperationDataSource");
-        if ([mappingOperation.dataSource isKindOfClass:managedObjectMappingOperationDataSourceClass]) {
-            NSOperationQueue *operationQueue = [(RKManagedObjectMappingOperationDataSource *)mappingOperation.dataSource operationQueue];
-            if (! [operationQueue isEqual:[NSOperationQueue mainQueue]]) {
-                [operationQueue waitUntilAllOperationsAreFinished];
-            }
-        }
-#endif
+        //#ifdef RKCoreDataIncluded
+        //        Class managedObjectMappingOperationDataSourceClass = NSClassFromString(@"RKManagedObjectMappingOperationDataSource");
+        //        if ([mappingOperation.dataSource isKindOfClass:managedObjectMappingOperationDataSourceClass]) {
+        //            NSOperationQueue *operationQueue = [(RKManagedObjectMappingOperationDataSource *)mappingOperation.dataSource operationQueue];
+        //            if (! [operationQueue isEqual:[NSOperationQueue mainQueue]]) {
+        //                [operationQueue waitUntilAllOperationsAreFinished];
+        //            }
+        //        }
+        //#endif
 
         self.performedMapping = YES;
         
@@ -446,10 +446,15 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 {
     [self performMapping];
 
+    return [self evaluateExpectations];
+}
+
+- (BOOL)evaluateExpectations
+{
     for (RKPropertyMappingTestExpectation *expectation in self.expectations) {
         if (! [self evaluateExpectation:expectation error:nil]) return NO;
     }
-
+    
     return YES;
 }
 

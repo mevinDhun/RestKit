@@ -2569,15 +2569,15 @@
     mappingsDictionary[@"human"] = humanMapping;
 
     // Create instances that should match the fixture
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     human1.railsID = @201;
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     human2.railsID = @202;
-    [managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    [managedObjectStore.mainQueueManagedObjectContext save:nil];
 
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:array mappingsDictionary:mappingsDictionary];
     RKFetchRequestManagedObjectCache *managedObjectCache = [[RKFetchRequestManagedObjectCache alloc] init];
-    mapper.mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+    mapper.mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext
                                                                                                                   cache:managedObjectCache];
                                                                                                                   
     [mapper start];
