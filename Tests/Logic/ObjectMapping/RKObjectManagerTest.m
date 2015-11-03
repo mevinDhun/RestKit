@@ -610,7 +610,6 @@
     RKRequestDescriptor *requestDesriptor2 = [RKRequestDescriptor requestDescriptorWithMapping:mapping2 objectClass:[RKSubclassedTestModel class] rootKeyPath:@"subclassed" method:RKRequestMethodAny];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:requestDesriptor1];
     [objectManager addRequestDescriptor:requestDesriptor2];
     
@@ -755,7 +754,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     
     NSURLRequest *request = [objectManager requestWithObject:user method:RKRequestMethodPOST path:@"/path" parameters:@{ @"this": @"that" }];
     id body = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
@@ -783,7 +781,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     [objectManager addRequestDescriptor:secondRequestDescriptor];
     
@@ -814,7 +811,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     [objectManager addRequestDescriptor:secondRequestDescriptor];
     
@@ -845,7 +841,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     [objectManager addRequestDescriptor:secondRequestDescriptor];
     
@@ -876,7 +871,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     [objectManager addRequestDescriptor:secondRequestDescriptor];
     
@@ -900,7 +894,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     
     NSArray *arrayOfObjects = @[ user ];
@@ -922,7 +915,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     [objectManager addRequestDescriptor:secondRequestDescriptor];
     
@@ -952,7 +944,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     [objectManager addRequestDescriptor:secondRequestDescriptor];
     
@@ -989,7 +980,6 @@
     
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:firstRequestDescriptor];
     [objectManager addRequestDescriptor:secondRequestDescriptor];
     
@@ -1663,7 +1653,6 @@
     RKResponseDescriptor *responseDescriptor2 = [RKResponseDescriptor responseDescriptorWithMapping:mapping2 method:RKRequestMethodGET pathPattern:@"/user" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addResponseDescriptorsFromArray:@[responseDescriptor1, responseDescriptor2]];
     
     __block RKTestUser *human;
@@ -1687,7 +1676,6 @@
     RKRequestDescriptor *requestDesriptor2 = [RKRequestDescriptor requestDescriptorWithMapping:mapping2 objectClass:[RKObjectMapperTestModel class] rootKeyPath:nil method:RKRequestMethodPOST];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addRequestDescriptor:requestDesriptor1];
     [objectManager addRequestDescriptor:requestDesriptor2];
     
@@ -1710,7 +1698,6 @@
     RKResponseDescriptor *responseDescriptor1 = [RKResponseDescriptor responseDescriptorWithMapping:mapping1 method:RKRequestMethodAny pathPattern:@"/user" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.HTTPClient.requestSerializer = [RKHTTPJSONRequestSerializer new];
-    //    objectManager.requestSerializationMIMEType = RKMIMETypeJSON; // FIXME PTC 20150625 review this change, default should be JSON?
     [objectManager addResponseDescriptorsFromArray:@[responseDescriptor1, responseDescriptor2]];
     
     __block RKTestUser *human;
