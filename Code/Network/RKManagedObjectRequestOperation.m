@@ -431,6 +431,11 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 @property (nonatomic, readonly) BOOL canSkipMapping;
 @property (nonatomic, assign) BOOL hasMemoizedCanSkipMapping;
 @property (nonatomic, copy) void (^willSaveMappingContextBlock)(NSManagedObjectContext *mappingContext);
+@property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
+@end
+
+@interface RKObjectRequestOperation (ManagedSubclass)
+- (void)execute;
 @end
 
 @implementation RKManagedObjectRequestOperation
@@ -524,16 +529,25 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     [self.responseMapperOperation cancel];
 }
 
+- (void)execute
+{
+    NSURLRequest *request = self.HTTPRequestOperation.request;
+    self.cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+    
+    [super execute];
+}
+
 // RKResponseHasBeenMappedCacheUserInfoKey is stored by RKObjectRequestOperation
 - (BOOL)canSkipMapping
 {
     BOOL (^shouldSkipMapping)(void) = ^{
-        NSURLRequest *request = self.HTTPRequestOperation.request;
-        NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
-        
         // Is the request cacheable
-        if (!cachedResponse) return NO;
+        if (!self.cachedResponse) return NO;
         if (!self.managedObjectCache) return NO;
+        
+        NSURLRequest *request = self.HTTPRequestOperation.request;
+        NSCachedURLResponse *cachedResponse = self.cachedResponse;
+        
         if (! [[request HTTPMethod] isEqualToString:@"GET"] && ! [[request HTTPMethod] isEqualToString:@"HEAD"]) return NO;
         NSHTTPURLResponse *response = (NSHTTPURLResponse *)self.HTTPRequestOperation.response;
         if (! [RKCacheableStatusCodes() containsIndex:response.statusCode]) return NO;
