@@ -542,12 +542,10 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
         blockObjects = objects;
     } failure:nil];
     [paginator loadPage:1];
-    // I am mocking here behaviour where NSOperation isFinished KVO was called after callback
-    paginator.objectRequestOperation.completionBlock();
-    paginator.objectRequestOperation.mappingResult = [[RKMappingResult alloc] initWithDictionary:@{@"data": @[@{@"name": @"Blake"}]}];
+    [paginator waitUntilFinished];
     
     // So even that isFinished was not called but completionBlock was, evertyhing should work. (race condition)
-    NSArray *expectedNames = @[ @"Blake" ];
+    NSArray *expectedNames = @[ @"Blake", @"Sarah", @"Colin" ];
     expect([[paginator.mappingResult array] valueForKey:@"name"]).will.equal(expectedNames);
     expect(paginator.error).will.beNil();
     expect(paginator.loaded).will.beTruthy();

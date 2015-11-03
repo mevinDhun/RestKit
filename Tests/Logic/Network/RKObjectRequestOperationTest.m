@@ -71,16 +71,6 @@
     return [RKResponseDescriptor responseDescriptorWithMapping:errorMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"errors" statusCodes:errorCodes];
 }
 
-- (void)testThatObjectRequestOperationResultsInRefreshedPropertiesAfterMapping
-{
-
-}
-
-- (void)testCancellationOfObjectRequestOperationCancelsMapping
-{
-
-}
-
 - (void)testShouldReturnSuccessWhenTheStatusCodeIs200AndTheResponseBodyOnlyContainsWhitespaceCharacters
 {
     RKTestComplexUser *user = [RKTestComplexUser new];
@@ -559,11 +549,12 @@
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/XML/channels.xml" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    requestOperation.HTTPRequestOperation.acceptableContentTypes = [NSSet setWithObject:@"application/json"];
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
     
     expect(requestOperation.error).notTo.beNil();
-    expect([requestOperation.error localizedDescription]).to.equal(@"Expected content type {(\n    \"application/json\",\n    \"application/x-www-form-urlencoded\"\n)}, got application/xml");
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected content type {(\n    \"application/json\"\n)}, got application/xml");
 }
 
 - (void)testThatLoadingAnUnexpectedStatusCodeReturnsCorrectErrorMessage
@@ -622,7 +613,7 @@
     expect([requestOperation isFinished]).will.beTruthy();
     
     expect(requestOperation.error).willNot.beNil();
-    expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200), got 500");
 }
 
 - (void)testFiveHundredErrorWithEmptyResponse
@@ -639,7 +630,7 @@
     [requestOperation waitUntilFinished];
     
     expect(requestOperation.error).willNot.beNil();
-    expect([requestOperation.error localizedDescription]).to.equal(@"Loaded an unprocessable response (500) with content type 'application/json'");
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200), got 500");
 }
 
 - (void)testThatAnObjectRequestOperationSentWithEmptyMappingInResponseDescriptorsIsConsideredSuccessful

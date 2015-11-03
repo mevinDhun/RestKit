@@ -134,7 +134,7 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
 
 - (void)HTTPOperationDidStart:(NSNotification *)notification
 {
-    RKHTTPRequestOperation *operation = [notification object];    
+    RKHTTPRequestOperation *operation = [notification object];
     if (![operation isKindOfClass:[RKHTTPRequestOperation class]]) return;
     
     objc_setAssociatedObject(operation, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -153,7 +153,7 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
 
 - (void)HTTPOperationDidFinish:(NSNotification *)notification
 {
-    RKHTTPRequestOperation *operation = [notification object];    
+    RKHTTPRequestOperation *operation = [notification object];
     if (![operation isKindOfClass:[RKHTTPRequestOperation class]]) return;
     
     // NOTE: if we have a parent object request operation, we'll wait it to finish to emit the logging info
@@ -236,16 +236,16 @@ NSString *const RKObjectRequestOperationMappingDidFinishUserInfoKey = @"mappingF
 
 static void RKIncrementNetworkActivityIndicator()
 {
-    #if __IPHONE_OS_VERSION_MIN_REQUIRED
-//        [[AFNetworkActivityIndicatorManager sharedManager] incrementActivityCount];
-    #endif
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+    //        [[AFNetworkActivityIndicatorManager sharedManager] incrementActivityCount];
+#endif
 }
 
 static void RKDecrementNetworkAcitivityIndicator()
 {
-    #if __IPHONE_OS_VERSION_MIN_REQUIRED
-//        [[AFNetworkActivityIndicatorManager sharedManager] decrementActivityCount];
-    #endif
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+    //        [[AFNetworkActivityIndicatorManager sharedManager] decrementActivityCount];
+#endif
 }
 
 static NSString *RKStringForStateOfObjectRequestOperation(RKObjectRequestOperation *operation)
@@ -339,7 +339,16 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
         
-        // TODO: set the acceptable status & content from the response descriptors
+        // set the acceptable status from the response descriptors
+        NSMutableIndexSet *acceptableStatusCodes = [NSMutableIndexSet new];
+        
+        for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+            [acceptableStatusCodes addIndexes:responseDescriptor.statusCodes];
+        }
+        
+        if(acceptableStatusCodes.count) {
+            self.HTTPRequestOperation.acceptableStatusCodes = acceptableStatusCodes;
+        }
         
         self.successCallbackQueue = [[self class] dispatchQueue];
         self.failureCallbackQueue = [[self class] dispatchQueue];
@@ -381,40 +390,40 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (void)setSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue
 {
-   if (successCallbackQueue != _successCallbackQueue) {
-       if (_successCallbackQueue) {
+    if (successCallbackQueue != _successCallbackQueue) {
+        if (_successCallbackQueue) {
 #if !OS_OBJECT_USE_OBJC
-           dispatch_release(_successCallbackQueue);
+            dispatch_release(_successCallbackQueue);
 #endif
-           _successCallbackQueue = NULL;
-       }
-
-       if (successCallbackQueue) {
+            _successCallbackQueue = NULL;
+        }
+        
+        if (successCallbackQueue) {
 #if !OS_OBJECT_USE_OBJC
-           dispatch_retain(successCallbackQueue);
+            dispatch_retain(successCallbackQueue);
 #endif
-           _successCallbackQueue = successCallbackQueue;
-       }
-   }
+            _successCallbackQueue = successCallbackQueue;
+        }
+    }
 }
 
 - (void)setFailureCallbackQueue:(dispatch_queue_t)failureCallbackQueue
 {
-   if (failureCallbackQueue != _failureCallbackQueue) {
-       if (_failureCallbackQueue) {
+    if (failureCallbackQueue != _failureCallbackQueue) {
+        if (_failureCallbackQueue) {
 #if !OS_OBJECT_USE_OBJC
-           dispatch_release(_failureCallbackQueue);
+            dispatch_release(_failureCallbackQueue);
 #endif
-           _failureCallbackQueue = NULL;
-       }
-
-       if (failureCallbackQueue) {
+            _failureCallbackQueue = NULL;
+        }
+        
+        if (failureCallbackQueue) {
 #if !OS_OBJECT_USE_OBJC
-           dispatch_retain(failureCallbackQueue);
+            dispatch_retain(failureCallbackQueue);
 #endif
-           _failureCallbackQueue = failureCallbackQueue;
-       }
-   }
+            _failureCallbackQueue = failureCallbackQueue;
+        }
+    }
 }
 
 // Adopted fix for "The Deallocation Problem" from AFN
@@ -448,19 +457,19 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-// See above setCompletionBlock:
+    // See above setCompletionBlock:
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
-
+    
     //Keep blocks for copyWithZone
     self.successBlock = success;
     self.failureBlock = failure;
-
+    
     self.completionBlock = ^ {
         if ([self isCancelled] && !self.error) {
             self.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
         }
-
+        
         if (self.error) {
             if (failure) {
                 dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
@@ -497,7 +506,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (void)execute
 {
-    __weak __typeof(self)weakSelf = self;    
+    __weak __typeof(self)weakSelf = self;
     
     [self.HTTPRequestOperation setCompletionBlockWithSuccess:^(RKHTTPRequestOperation *operation, id responseObject) {
         if (weakSelf.isCancelled) {
@@ -510,7 +519,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
             if (weakSelf.isCancelled) {
                 [weakSelf.stateMachine finish];
                 return;
-            }                                    
+            }
             
             // If there is no mapping result but no error, there was no mapping to be performed,
             // which we do not treat as an error condition
@@ -570,7 +579,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     operation.failureCallbackQueue = self.failureCallbackQueue;
     operation.willMapDeserializedResponseBlock = self.willMapDeserializedResponseBlock;
     [operation setCompletionBlockWithSuccess:self.successBlock failure:self.failureBlock];
-
+    
     return operation;
 }
 
