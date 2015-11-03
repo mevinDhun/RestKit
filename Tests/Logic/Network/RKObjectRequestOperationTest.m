@@ -613,7 +613,7 @@
     expect([requestOperation isFinished]).will.beTruthy();
     
     expect(requestOperation.error).willNot.beNil();
-    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200), got 500");
+    expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
 }
 
 - (void)testFiveHundredErrorWithEmptyResponse
@@ -630,7 +630,7 @@
     [requestOperation waitUntilFinished];
     
     expect(requestOperation.error).willNot.beNil();
-    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200), got 500");
+    expect([requestOperation.error localizedDescription]).to.equal(@"Loaded an unprocessable response (500) with content type 'application/json'");
 }
 
 - (void)testThatAnObjectRequestOperationSentWithEmptyMappingInResponseDescriptorsIsConsideredSuccessful

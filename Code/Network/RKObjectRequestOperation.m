@@ -343,6 +343,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         NSMutableIndexSet *acceptableStatusCodes = [NSMutableIndexSet new];
         
         for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+            if(!responseDescriptor.statusCodes) {
+                acceptableStatusCodes = nil;
+                break;
+            }
+            
             [acceptableStatusCodes addIndexes:responseDescriptor.statusCodes];
         }
         
