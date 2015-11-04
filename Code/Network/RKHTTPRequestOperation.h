@@ -25,7 +25,7 @@
 @protocol RKHTTPResponseSerialization;
 
 /**
- The `RKHTTPRequestOperation` class is a subclass of `AFHTTPRequestOperation` for HTTP or HTTPS requests made by RestKit. It provides per-instance configuration of the acceptable status codes and content types and integrates with the `RKLog` system to provide detailed requested and response logging. Instances of `RKHTTPRequest` are created by `RKObjectRequestOperation` and its subclasses to HTTP requests that will be object mapped. 
+ The `RKHTTPRequestOperation` class is a subclass of `NSOperation` for HTTP or HTTPS requests made by RestKit. It provides per-instance configuration of the acceptable status codes and content types and integrates with the `RKLog` system to provide detailed requested and response logging. Instances of `RKHTTPRequest` are created by `RKObjectRequestOperation` and its subclasses to HTTP requests that will be object mapped.
  
  ## Determining Request Processability
  

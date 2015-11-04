@@ -188,8 +188,6 @@ defaultHeaders = _defaultHeaders;
 }
 
 - (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request
-                  acceptableStatusCodes:(NSIndexSet *)acceptableStatusCodes
-                 acceptableContentTypes:(NSSet *)acceptableContentTypes
                       completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler{
     
     NSURLSession *session = [NSURLSession sharedSession];
@@ -203,34 +201,6 @@ defaultHeaders = _defaultHeaders;
         if(error){
             completionHandler(nil, nil, nil, error);
             return;
-        }
-        
-        if(acceptableStatusCodes && [response isKindOfClass:[NSHTTPURLResponse class]] && ![acceptableStatusCodes containsIndex:((NSHTTPURLResponse *)response).statusCode]) {
-            NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
-            
-            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected status code in (%@), got %ld", RKDescriptionStringFromIndexSet(acceptableStatusCodes), (long)code] };
-            NSError *e = [NSError errorWithDomain:RKErrorDomain code:code userInfo:userInfo];
-            
-            completionHandler(nil, nil, response, e);
-            return;
-        }
-        
-        if(acceptableContentTypes && RKRequestMethodFromString(request.HTTPMethod) != RKRequestMethodHEAD && [response isKindOfClass:[NSHTTPURLResponse class]]) {
-            NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
-            
-            if(![RKStatusCodesOfResponsesWithOptionalBodies() containsIndex:code]) {
-                NSString *contentType = [[(NSHTTPURLResponse *)response allHeaderFields] objectForKey:@"Content-Type"];
-                
-                if(contentType && !RKMIMETypeInSet(contentType, acceptableContentTypes)) {
-                    NSRange endRange = [contentType rangeOfString:@";"];
-                    
-                    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected content type %@, got %@", acceptableContentTypes, endRange.location == NSNotFound ? contentType : [contentType substringToIndex:endRange.location]] };
-                    NSError *e = [NSError errorWithDomain:RKErrorDomain code:code userInfo:userInfo];
-                    
-                    completionHandler(nil, nil, response, e);
-                    return;
-                }
-            }
         }
         
         id responseObject;

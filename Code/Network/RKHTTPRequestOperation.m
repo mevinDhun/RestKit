@@ -138,9 +138,9 @@ const NSMutableSet *acceptableContentTypes;
 - (BOOL)isReady {
     
     return  ![self isExecuting] &&
-            ![self isFinished] &&
-            ![self isCancelled] &&
-            [super isReady];
+    ![self isFinished] &&
+    ![self isCancelled] &&
+    [super isReady];
 }
 
 - (BOOL)isPaused {
@@ -185,22 +185,56 @@ const NSMutableSet *acceptableContentTypes;
         
         // Notify observers/queue
         self.isExecuting = YES;
-
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidStartNotification object:self];
         });
         
-        self.requestTask = [self.HTTPClient performRequest:self.request
-                                     acceptableStatusCodes:self.acceptableStatusCodes
-                                    acceptableContentTypes:self.acceptableContentTypes
-                                         completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
+        __weak typeof(self) weakSelf = self;
+        NSURLRequest *request = self.request;
+        NSIndexSet *acceptableStatusCodes = self.acceptableStatusCodes;
+        NSSet *acceptableContentTypes = self.acceptableContentTypes;
+        
+        self.requestTask = [self.HTTPClient performRequest:request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
             
-            self.responseData = responseData;
-            self.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            self.responseObject = responseObject;            
-            self.response = (NSHTTPURLResponse*) response;
-            self.error = error;
-            [self finish];
+            id returnObject = responseObject;
+            NSData *returnData = responseData;
+            NSError *returnError = error;
+            
+            if(acceptableStatusCodes && [response isKindOfClass:[NSHTTPURLResponse class]] && ![acceptableStatusCodes containsIndex:((NSHTTPURLResponse *)response).statusCode]) {
+                NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
+                
+                NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected status code in (%@), got %ld", RKDescriptionStringFromIndexSet(acceptableStatusCodes), (long)code] };
+                
+                returnError = [NSError errorWithDomain:RKErrorDomain code:code userInfo:userInfo];
+                returnObject = nil;
+                returnData = nil;
+            }
+            
+            else if(acceptableContentTypes && RKRequestMethodFromString(request.HTTPMethod) != RKRequestMethodHEAD && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+                NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
+                
+                if(![RKStatusCodesOfResponsesWithOptionalBodies() containsIndex:code]) {
+                    NSString *contentType = [[(NSHTTPURLResponse *)response allHeaderFields] objectForKey:@"Content-Type"];
+                    
+                    if(contentType && !RKMIMETypeInSet(contentType, acceptableContentTypes)) {
+                        NSRange endRange = [contentType rangeOfString:@";"];
+                        
+                        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected content type %@, got %@", acceptableContentTypes, endRange.location == NSNotFound ? contentType : [contentType substringToIndex:endRange.location]] };
+                        
+                        returnError = [NSError errorWithDomain:RKErrorDomain code:code userInfo:userInfo];
+                        returnObject = nil;
+                        returnData = nil;
+                    }
+                }
+            }
+            
+            weakSelf.responseData = returnData;
+            weakSelf.responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+            weakSelf.responseObject = returnObject;
+            weakSelf.response = (NSHTTPURLResponse*) response;
+            weakSelf.error = returnError;
+            [weakSelf finish];
         }];
     }
     [self.lock unlock];
@@ -233,13 +267,13 @@ const NSMutableSet *acceptableContentTypes;
     [self.requestTask resume];
     
     self.isExecuting = YES;
-
+    
     [self.lock unlock];
 }
 
 
 - (void)finish {
-
+    
     // Notify observers/queue
     self.isExecuting = NO;
     self.isFinished = YES;
