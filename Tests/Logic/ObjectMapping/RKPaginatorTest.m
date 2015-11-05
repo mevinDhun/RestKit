@@ -32,6 +32,24 @@
 @property (nonatomic, strong) NSString* perPageStr;
 @end
 
+@interface RKTestPaginator : RKPaginator
+@end
+@implementation RKTestPaginator
+
+- (instancetype)init
+{
+    OCMockObject *mockMapping = [OCMockObject niceMockForClass:[RKObjectMapping class]];
+    [[[mockMapping stub] andCall:@selector(class) onObject:[RKPaginator class]] objectClass];
+    
+    self = [self initWithRequest:[NSURLRequest new]
+               paginationMapping:(RKObjectMapping *)mockMapping
+             responseDescriptors:[NSArray array]];
+    
+    return self;
+}
+
+@end
+
 @implementation RKCustomPaginator
 -(void) setPerPage:(NSUInteger)perPage {
     [super setPerPage:perPage];
@@ -365,7 +383,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 
 - (void)testKnowledgeOfHasANextPage
 {
-    RKPaginator *paginator = [RKPaginator new];
+    RKPaginator *paginator = [RKTestPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     [[[mockPaginator stub] andReturnValue:@YES] isLoaded];
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)5)] perPage];
@@ -381,7 +399,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 
 - (void)testHasNextPageRaisesExpectionWhenNotLoaded
 {
-    RKPaginator *paginator = [RKPaginator new];
+    RKPaginator *paginator = [RKTestPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     [[[mockPaginator stub] andReturnValue:@NO] isLoaded];
     XCTAssertThrows([mockPaginator hasNextPage], @"Expected exception due to isLoaded == NO");
@@ -389,7 +407,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 
 - (void)testHasNextPageRaisesExpectionWhenPageCountIsUnknown
 {
-    RKPaginator *paginator = [RKPaginator new];
+    RKPaginator *paginator = [RKTestPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     [[[mockPaginator stub] andReturnValue:@YES] isLoaded];
     [[[mockPaginator stub] andReturnValue:@NO] hasPageCount];
@@ -398,7 +416,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 
 - (void)testHasPreviousPageRaisesExpectionWhenNotLoaded
 {
-    RKPaginator *paginator = [RKPaginator new];
+    RKPaginator *paginator = [RKTestPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     [[[mockPaginator stub] andReturnValue:@NO] isLoaded];
     XCTAssertThrows([mockPaginator hasPreviousPage], @"Expected exception due to isLoaded == NO");
@@ -406,7 +424,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 
 - (void)testKnowledgeOfPreviousPage
 {
-    RKPaginator *paginator = [RKPaginator new];
+    RKPaginator *paginator = [RKTestPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     [[[mockPaginator stub] andReturnValue:@YES] isLoaded];
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)5)] perPage];
@@ -422,7 +440,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 
 - (void)testProxyAttributes
 {
-    RKPaginator *paginator = [RKPaginator new];
+    RKPaginator *paginator = [RKTestPaginator new];
     [paginator setValue:@(12345) forKey:@"pageCountNumber"];
     expect(paginator.pageCount).to.equal(12345);
     expect([paginator valueForKey:@"pageCountNumber"]).to.equal(12345);
