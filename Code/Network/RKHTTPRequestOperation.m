@@ -56,6 +56,8 @@ const NSMutableSet *acceptableContentTypes;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @property (readwrite, nonatomic, strong) NSURLSessionTask *requestTask;
 
+@property (nonatomic, assign) BOOL taskFinished;
+
 @end
 
 @implementation RKHTTPRequestOperation
@@ -152,14 +154,13 @@ const NSMutableSet *acceptableContentTypes;
 }
 
 - (BOOL)isFinished {
-    return self.requestTask && self.requestTask.state == NSURLSessionTaskStateCompleted;
-}
-
-- (BOOL)isCancelled {
-    return [super isCancelled] || [self isFinished];
+    return self.taskFinished;
 }
 
 - (BOOL)isConcurrent {
+    return YES;
+}
+- (BOOL)isAsynchronous {
     return YES;
 }
 
@@ -170,6 +171,7 @@ const NSMutableSet *acceptableContentTypes;
 
 - (void)setIsFinished:(BOOL)isFinished {
     [self willChangeValueForKey:@"isFinished"];
+    self.taskFinished = isFinished;
     [self didChangeValueForKey:@"isFinished"];
 }
 
@@ -196,6 +198,13 @@ const NSMutableSet *acceptableContentTypes;
         NSSet *acceptableContentTypes = self.acceptableContentTypes;
         
         self.requestTask = [self.HTTPClient performRequest:request completionHandler:^(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error) {
+            
+            [weakSelf.lock lock];
+            
+            if (weakSelf.isCancelled) {
+                [weakSelf.lock unlock];
+                return;
+            }
             
             id returnObject = responseObject;
             NSData *returnData = responseData;
@@ -234,6 +243,9 @@ const NSMutableSet *acceptableContentTypes;
             weakSelf.responseObject = returnObject;
             weakSelf.response = (NSHTTPURLResponse*) response;
             weakSelf.error = returnError;
+            
+            [weakSelf.lock unlock];
+            
             [weakSelf finish];
         }];
     }
@@ -274,6 +286,8 @@ const NSMutableSet *acceptableContentTypes;
 
 - (void)finish {
     
+    [self.lock lock];
+    
     // Notify observers/queue
     self.isExecuting = NO;
     self.isFinished = YES;
@@ -281,6 +295,7 @@ const NSMutableSet *acceptableContentTypes;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:RKHTTPRequestOperationDidFinishNotification object:self];
     });
+    [self.lock unlock];
 }
 
 - (void)cancel {
@@ -291,6 +306,8 @@ const NSMutableSet *acceptableContentTypes;
         [self.requestTask cancel];
         
         self.isCancelled = YES;
+        self.isExecuting = NO;
+        self.isFinished = YES;
         [super cancel];
     }
     [self.lock unlock];
@@ -301,6 +318,10 @@ const NSMutableSet *acceptableContentTypes;
     
     __weak typeof(self) weakSelf = self;
     self.completionBlock = ^{
+        if (weakSelf.isCancelled) {
+            return;
+        }
+        
         if (weakSelf.error) {
             if (failure) {
                 dispatch_async(weakSelf.failureCallbackQueue ?: dispatch_get_main_queue(), ^{

@@ -511,6 +511,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (void)execute
 {
+    [self willExecute];
+    
     __weak __typeof(self)weakSelf = self;
     
     [self.HTTPRequestOperation setCompletionBlockWithSuccess:^(RKHTTPRequestOperation *operation, id responseObject) {
@@ -569,6 +571,10 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
             self.HTTPRequestOperation.request, RKStringDescribingURLResponseWithData(self.HTTPRequestOperation.response, self.HTTPRequestOperation.responseData)];
 }
 
+- (void)willExecute
+{
+    // Default implementation does nothing
+}
 - (void)willFinish
 {
     // Default implementation does nothing
@@ -591,6 +597,10 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 #pragma mark - NSOperation
 
 - (BOOL)isConcurrent
+{
+    return YES;
+}
+- (BOOL)isAsynchronous
 {
     return YES;
 }

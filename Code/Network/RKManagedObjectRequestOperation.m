@@ -434,10 +434,6 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 @property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @end
 
-@interface RKObjectRequestOperation (ManagedSubclass)
-- (void)execute;
-@end
-
 @implementation RKManagedObjectRequestOperation
 
 @dynamic willMapDeserializedResponseBlock;
@@ -529,12 +525,10 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     [self.responseMapperOperation cancel];
 }
 
-- (void)execute
+- (void)willExecute
 {
     NSURLRequest *request = self.HTTPRequestOperation.request;
     self.cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
-    
-    [super execute];
 }
 
 // RKResponseHasBeenMappedCacheUserInfoKey is stored by RKObjectRequestOperation
