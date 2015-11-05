@@ -190,7 +190,7 @@ defaultHeaders = _defaultHeaders;
 - (NSURLSessionDataTask*)performRequest:(NSURLRequest *)request
                       completionHandler:(void (^)(id responseObject, NSData *responseData, NSURLResponse *response, NSError *error))completionHandler{
     
-    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSession *session = (self.sessionConfiguration ? [NSURLSession sessionWithConfiguration:self.sessionConfiguration] : [NSURLSession sharedSession]);
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
