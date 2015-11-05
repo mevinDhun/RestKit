@@ -82,7 +82,6 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
 - (instancetype)init
 {
-    NSAssert(NO, @"Incorrect designated initialiser used for this class");
     return [self initWithRepresentation:nil mappingsDictionary:nil];
 }
 
