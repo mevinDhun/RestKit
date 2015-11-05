@@ -150,10 +150,16 @@
         [self waitForPendingChangesToProcess];
     }];
     
+    __block BOOL containsHuman1 = NO;
+    __block BOOL containsHuman2 = NO;
+    
     [self.managedObjectCache.entityCache cacheObjectsForEntity:self.humanEntity byAttributes:@[ @"railsID" ] completion:^{
-        expect([self.managedObjectCache.entityCache containsObject:human1]).will.equal(YES);
-        expect([self.managedObjectCache.entityCache containsObject:human2]).will.equal(NO);
+        containsHuman1 = [self.managedObjectCache.entityCache containsObject:human1];
+        containsHuman2 = [self.managedObjectCache.entityCache containsObject:human2];
     }];
+    
+    expect(containsHuman1).will.equal(YES);
+    expect(containsHuman2).will.equal(NO);
 }
 
 @end
