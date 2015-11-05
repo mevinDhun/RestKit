@@ -80,6 +80,12 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
 @implementation RKMapperOperation
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithRepresentation:nil mappingsDictionary:nil];
+}
+
 - (instancetype)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
 {
     self = [super init];

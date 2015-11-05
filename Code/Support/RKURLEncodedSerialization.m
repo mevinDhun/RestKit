@@ -49,6 +49,12 @@ static NSString * AFPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
 
 @implementation RKAFQueryStringPair
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithField:nil value:nil];
+}
+
 - (instancetype)initWithField:(id)field value:(id)value {
     self = [super init];
     if (!self) {

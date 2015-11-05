@@ -173,6 +173,12 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 
 #pragma mark 
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithRequest:nil response:nil data:nil responseDescriptors:nil];
+}
+
 - (instancetype)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
                  data:(NSData *)data

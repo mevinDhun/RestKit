@@ -110,6 +110,12 @@
 
 @implementation RKKeyPathObjectMappingMatcher
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithKeyPath:nil expectedValue:nil objectMapping:nil];
+}
+
 - (instancetype)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
@@ -141,6 +147,12 @@
 
 @implementation RKKeyPathClassObjectMappingMatcher
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithKeyPath:nil expectedClass:nil objectMapping:nil];
+}
+
 - (instancetype)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
@@ -170,6 +182,12 @@
 @end
 
 @implementation RKKeyPathValueMapObjectMappingMatcher
+
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithKeyPath:nil expectedValueMap:nil];
+}
 
 - (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
 {
@@ -210,6 +228,12 @@
 
 @implementation RKPredicateObjectMappingMatcher
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithPredicate:nil objectMapping:nil];
+}
+
 - (instancetype)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(predicate);
@@ -236,6 +260,12 @@
 @end
 
 @implementation RKBlockObjectMatchingMatcher
+
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithPossibleMappings:nil block:nil];
+}
 
 - (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
 {

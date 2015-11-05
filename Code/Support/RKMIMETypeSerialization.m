@@ -40,6 +40,12 @@
 
 @implementation RKMIMETypeSerializationRegistration
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithMIMEType:nil serializationClass:nil];
+}
+
 - (instancetype)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<RKSerialization>)serializationClass
 {
     NSParameterAssert(MIMETypeStringOrRegularExpression);

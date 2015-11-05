@@ -72,6 +72,12 @@ const NSMutableSet *acceptableContentTypes;
     _successCallbackQueue = NULL;
 }
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithRequest:nil HTTPClient:nil];
+}
+
 - (instancetype)initWithRequest:(NSURLRequest *)urlRequest HTTPClient:(id<RKHTTPClient>)HTTPClient{
     
     NSParameterAssert(urlRequest);

@@ -16,6 +16,22 @@
     return [[self alloc] initWithSearchText:searchText type:type];
 }
 
+- (instancetype)init
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithSearchText:nil type:0];
+}
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithSearchText:nil type:0];
+}
+- (instancetype)initWithType:(NSCompoundPredicateType)type subpredicates:(NSArray<NSPredicate *> *)subpredicates
+{
+    NSAssert(NO, @"Incorrect designated initialiser used for this class");
+    return [self initWithSearchText:nil type:0];
+}
+
 - (instancetype)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type
 {
     RKStringTokenizer *tokenizer = [RKStringTokenizer new];
