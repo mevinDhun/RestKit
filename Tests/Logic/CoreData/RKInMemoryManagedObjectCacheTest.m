@@ -110,18 +110,21 @@
 
 - (void)testManagedObjectContextProcessPendingChangesRemovesExistingObjectsFromCache
 {
-    // TODO PENDING: This test is brittle when run in the full suite
-    return;
-    //    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    //    human1.railsID = @12345;
-    //    [self waitForPendingChangesToProcess];
-    //    expect([self.managedObjectCache.entityCache containsObject:human1]).will.beTruthy();
-    //    [self.managedObjectStore.persistentStoreManagedObjectContext deleteObject:human1];
-    //    [self waitForPendingChangesToProcess];
-    //    [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
-    //        // Nothing
-    //    }];
-    //    expect([self.managedObjectCache.entityCache containsObject:human1]).will.beFalsy();
+    __block RKHuman *human1;
+    [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+        human1.railsID = @12345;
+        [self waitForPendingChangesToProcess];
+    }];
+    
+    expect([self.managedObjectCache.entityCache containsObject:human1]).will.beTruthy();
+    
+    [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        [self.managedObjectStore.persistentStoreManagedObjectContext deleteObject:human1];
+        [self waitForPendingChangesToProcess];
+    }];
+    
+    expect([self.managedObjectCache.entityCache containsObject:human1]).will.beFalsy();
 }
 
 - (void)testCreatingProcessingAndDeletingObjectsWorksAsExpected
