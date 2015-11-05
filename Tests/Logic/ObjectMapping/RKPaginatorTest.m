@@ -388,6 +388,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [[[mockPaginator stub] andReturnValue:@YES] isLoaded];
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)5)] perPage];
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)3)] pageCount];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(YES)] hasPageCount];
 
     [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE((NSUInteger)1)] currentPage];
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(YES)));
